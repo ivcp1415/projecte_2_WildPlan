@@ -5,7 +5,7 @@ from rest_framework.response import Response
 
 from . import views
 from .models import TokenJWT2
-from .serializers import LoginSerializer
+from .serializers import LoginSerializer, RegistreSerializer
 from .services import authenticate_user, generate_token
 
 
@@ -36,3 +36,15 @@ def login_view(request):
         return Response({'error': 'Authentication failed'}, status=status.HTTP_401_UNAUTHORIZED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) # validation errors
 
+# Create your views here.
+@api_view(['POST'])
+def register(request):
+    # paso los datos del usuario al serializer para validarlas
+    serializer = RegistreSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(
+            {'missatge': 'Usuari creat correctament.'},
+            status=201
+        )
+    return Response(serializer.errors, status=400)
