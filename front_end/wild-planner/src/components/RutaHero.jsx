@@ -23,10 +23,24 @@ const RutaHero = ({ ruta }) => {
                 {/* Badge con la modalidad de la ruta */}
                 <div className="hero-badges">
                     <span className="hero-badge">{ruta.modalitat}</span>
+                    {/* AFEGIT: També podem posar un badge extra si està verificada (opcional) */}
+                    {/* {ruta.es_verificada && <span className="hero-badge" style={{ backgroundColor: '#28a745' }}>Oficial</span>} */}
                 </div>
 
-                {/* Nombre de la ruta */}
-                <h1 className="hero-title">{ruta.nom}</h1>
+                {/* Nombre de la ruta amb el logo de verificat si cal */}
+                <h1 className="hero-title" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    {ruta.nom}
+                    {/* AFEGIT: Icona de verificat */}
+                    {ruta.es_verificada && (
+                        <span 
+                            className="material-symbols-outlined" 
+                            style={{ color: '#28a745', fontSize: '1.2em' }} 
+                            title="Ruta verificada per l'equip"
+                        >
+                            verified
+                        </span>
+                    )}
+                </h1>
 
                 {/* Descripción corta: mostramos los primeros 100 caracteres.
                     Primero comprobamos que existe descripcion (&& -> si...haz...), despues slice coge los 100 primeros caracteres

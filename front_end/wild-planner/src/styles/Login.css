@@ -1,99 +1,128 @@
 /* =========================================
-   ESTILS GLOBALS I FONS
+   DESIGN SYSTEM TOKENS
+   ========================================= */
+:root {
+    --primary:               #173124;
+    --primary-container:     #2d4739;
+    --on-primary:            #ffffff;
+    --surface:               #f8f9fa;
+    --surface-container-low: #f3f4f5;
+    --surface-lowest:        #ffffff;
+    --surface-variant:       #e1e3e4;
+    --on-surface:            #191c1d;
+    --on-surface-variant:    #424844;
+    --outline:               #727973;
+    --outline-variant:       #c2c8c2;
+    --error:                 #ba1a1a;
+    --font-main:             'Plus Jakarta Sans', system-ui, sans-serif;
+}
+
+/* =========================================
+   PAGE SHELL
    ========================================= */
 .login-page {
     position: relative;
     min-height: 100vh;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-    /* Evitem marges estranys */
-    margin: 0;
-    padding: 20px;
+    font-family: var(--font-main);
+    padding: 24px 16px;
     box-sizing: border-box;
+    overflow: hidden;
 }
 
+/* Background photo */
 .bg-image {
     position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    /* URL d'una imatge de muntanya espectacular (canvia-la per la teva) */
-    background-image: url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80');
+    inset: 0;
+    background-image: url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2070&auto=format&fit=crop');
     background-size: cover;
     background-position: center;
-    z-index: -2;
+    z-index: 0;
 }
 
+/* Frosted-glass overlay matching design system surface */
 .bg-overlay {
     position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    /* Filtre fosc perquè la targeta ressalti */
-    background: rgba(0, 0, 0, 0.55);
-    z-index: -1;
-}
-
-/* =========================================
-   TARGETA PRINCIPAL (Card)
-   ========================================= */
-.login-card-container {
-    width: 100%;
-    max-width: 450px;
+    inset: 0;
+    background: rgba(248, 249, 250, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     z-index: 1;
 }
 
+/* =========================================
+   CARD
+   ========================================= */
+.login-card-container {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 440px;
+}
+
 .login-card {
-    background-color: #ffffff;
-    padding: 2.5rem;
+    background: var(--surface-lowest);
+    border: 1px solid rgba(194, 200, 194, 0.5);
     border-radius: 12px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    padding: 32px;
+    box-sizing: border-box;
 }
 
 /* =========================================
-   CAPÇALERA I TEXTOS
+   LOGO & HEADER
    ========================================= */
-.header-container {
+.login-header {
     text-align: center;
     margin-bottom: 24px;
 }
 
-.logo-group {
+.login-logo-group {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    color: #1e3a8a; /* Blau fosc corporatiu */
+    margin-bottom: 8px;
 }
 
-.logo-icon {
+.login-logo-icon {
     font-size: 32px;
+    color: var(--primary);
+    font-variation-settings: 'FILL' 1;
 }
 
-.logo-title {
-    font-size: 1.8rem;
-    font-weight: 700;
-    margin: 0;
+.login-logo-title {
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 32px;
+    color: var(--primary);
+    letter-spacing: -0.01em;
 }
 
-.subtitle {
-    color: #6b7280;
-    font-size: 0.95rem;
-    margin-top: 8px;
+.login-subtitle {
+    font-size: 14px;
+    line-height: 20px;
+    color: var(--on-surface-variant);
 }
 
 /* =========================================
-   FORMULARI I INPUTS
+   FORM ELEMENTS
    ========================================= */
 .form-group {
-    margin-bottom: 18px;
+    margin-bottom: 16px;
     text-align: left;
 }
 
 .form-label {
     display: block;
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: #374151;
-    margin-bottom: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: var(--on-surface);
+    margin-bottom: 4px;
 }
 
 .input-container {
@@ -102,165 +131,203 @@
     align-items: center;
 }
 
-/* Posicionament de les icones (Material Symbols) */
 .input-icon-left {
     position: absolute;
     left: 12px;
-    color: #9ca3af;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--on-surface-variant);
     font-size: 20px;
-    pointer-events: none; /* Perquè no molestin al fer clic */
+    pointer-events: none;
+    user-select: none;
 }
 
 .form-input {
     width: 100%;
-    padding: 12px 12px 12px 40px; /* Espai extra a l'esquerra per la icona */
-    border: 1px solid #d1d5db;
+    background: var(--surface);
+    color: var(--on-surface);
+    font-family: var(--font-main);
+    font-size: 16px;
+    line-height: 24px;
+    padding: 12px 16px 12px 40px;
+    border: 1px solid var(--outline);
     border-radius: 8px;
-    font-size: 1rem;
     outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
+    transition: border-color 0.15s, box-shadow 0.15s;
     box-sizing: border-box;
 }
 
+.form-input::placeholder {
+    color: var(--outline-variant);
+}
+
 .form-input:focus {
-    border-color: #3b82f6; /* Blau viu al fer clic */
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 1px var(--primary);
 }
 
 .has-right-icon {
-    padding-right: 44px; /* Espai per a l'ull de la contrasenya */
+    padding-right: 44px;
 }
 
 .btn-icon-right {
     position: absolute;
-    right: 8px;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
     background: none;
     border: none;
-    color: #6b7280;
+    color: var(--on-surface-variant);
     cursor: pointer;
     padding: 4px;
     display: flex;
     align-items: center;
-    justify-content: center;
+    line-height: 1;
+    transition: color 0.15s;
 }
 
 .btn-icon-right:hover {
-    color: #374151;
+    color: var(--on-surface);
+}
+
+.btn-icon-right .material-symbols-outlined {
+    font-size: 20px;
 }
 
 /* =========================================
-   BOTONS
+   BUTTONS
    ========================================= */
 .btn-submit {
     width: 100%;
-    padding: 12px;
-    background-color: #2563eb;
-    color: white;
+    background: var(--primary);
+    color: var(--on-primary);
+    font-family: var(--font-main);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 20px;
+    letter-spacing: 0.02em;
     border: none;
     border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
+    padding: 12px;
     margin-top: 8px;
-    transition: background-color 0.2s;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(45, 71, 57, 0.2);
+    transition: background-color 0.2s, transform 0.1s;
 }
 
 .btn-submit:hover:not(:disabled) {
-    background-color: #1d4ed8;
+    background: var(--primary-container);
+}
+
+.btn-submit:active:not(:disabled) {
+    transform: scale(0.98);
 }
 
 .btn-submit:disabled {
-    background-color: #9ca3af;
+    background: var(--outline);
     cursor: not-allowed;
-}
-
-/* =========================================
-   MISSATGES D'ERROR (Abans Tailwind)
-   ========================================= */
-.error-box {
-    background-color: #fef2f2;
-    border: 1px solid #f87171;
-    color: #b91c1c;
-    padding: 12px;
-    border-radius: 8px;
-    font-size: 0.9rem;
-    margin-bottom: 20px;
-    text-align: center;
-}
-
-.input-error {
-    border-color: #ef4444 !important;
-    background-color: #fffafb;
-}
-
-.input-error:focus {
-    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2) !important;
-}
-
-.error-message {
-    display: block;
-    color: #ef4444;
-    font-size: 0.8rem;
-    margin-top: 4px;
-}
-
-/* =========================================
-   DIVISOR I BOTONS SOCIALS
-   ========================================= */
-.divider-container {
-    display: flex;
-    align-items: center;
-    margin: 24px 0;
-}
-
-.divider-line {
-    flex: 1;
-    height: 1px;
-    background-color: #e5e7eb;
-}
-
-.divider-text {
-    padding: 0 12px;
-    color: #6b7280;
-    font-size: 0.85rem;
+    box-shadow: none;
 }
 
 .btn-social {
     width: 100%;
-    padding: 10px;
-    background-color: #f3f4f6;
-    color: #374151;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    transition: background-color 0.2s;
+    gap: 10px;
+    background: var(--surface-lowest);
+    color: var(--on-surface);
+    font-family: var(--font-main);
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    border: 1px solid var(--outline);
+    border-radius: 8px;
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: background-color 0.15s;
 }
 
 .btn-social:hover {
-    background-color: #e5e7eb;
+    background: var(--surface-container-low);
 }
 
 /* =========================================
-   FOOTER
+   DIVIDER
+   ========================================= */
+.login-divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 24px 0;
+}
+
+.login-divider-line {
+    flex: 1;
+    height: 1px;
+    background: var(--surface-variant);
+}
+
+.login-divider-text {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--on-surface-variant);
+    white-space: nowrap;
+}
+
+/* =========================================
+   FOOTER LINK
    ========================================= */
 .login-footer {
-    text-align: center;
     margin-top: 24px;
-    font-size: 0.95rem;
-    color: #4b5563;
+    padding-top: 16px;
+    border-top: 1px solid var(--surface-variant);
+    text-align: center;
+    font-size: 14px;
+    line-height: 20px;
+    color: var(--on-surface-variant);
 }
 
 .register-link {
-    color: #2563eb;
-    text-decoration: none;
+    color: var(--primary);
     font-weight: 600;
+    text-decoration: none;
+    text-underline-offset: 4px;
+    transition: color 0.15s, text-decoration 0.15s;
 }
 
 .register-link:hover {
+    color: var(--primary-container);
     text-decoration: underline;
+}
+
+/* =========================================
+   ERRORS
+   ========================================= */
+.error-box {
+    background: #ffdad6;
+    border: 1px solid var(--error);
+    color: var(--error);
+    font-size: 14px;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+.input-error {
+    border-color: var(--error) !important;
+}
+
+.input-error:focus {
+    box-shadow: 0 0 0 1px var(--error) !important;
+}
+
+.error-message {
+    display: block;
+    color: var(--error);
+    font-size: 12px;
+    margin-top: 4px;
 }

@@ -156,7 +156,7 @@ export default function Rutes() {
             nom: dadesFormulari.nom,
             descripcio: dadesFormulari.descripcio,
             modalitat: dadesFormulari.modalitat,
-            url_imatges: urlImatge || null,
+            imatge_portada: urlImatge || null,
             distancia: parseFloat(stats.distancia.toFixed(2)),
             desnivell_positiu: stats.desnivell_positiu,
             desnivell_negatiu: stats.desnivell_negatiu,

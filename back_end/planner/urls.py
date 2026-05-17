@@ -24,9 +24,11 @@ urlpatterns = [
     path('rutes/<int:pk>/', views.retrieve_ruta, name='detall-ruta'),
     path('rutes/<int:pk>/editar/', views.edit_rutes, name='editar-ruta'),
     path('rutes/<int:pk>/eliminar/', views.delete_ruta, name='eliminar-ruta'),
+    path('rutes/<int:pk>/verificar/', views.verificar_ruta, name='verificar-ruta'),
 
     # ==========================
     # 4. INTERACCIÓ SOCIAL
     # ==========================
     path('rutes/opinio/', views.add_opinion, name='afegir_opinio_completa'),
+    path('opinions/<int:pk>/delete/', views.delete_opinio, name='delete-opinio'),
 ]

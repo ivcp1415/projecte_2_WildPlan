@@ -167,6 +167,10 @@ class Comentari(models.Model):
     descripcio = models.TextField()
     data_creacio = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        # AFEGIT: Restricció perquè un usuari només pugui fer un comentari per ruta
+        unique_together = ('usuari', 'ruta')
+
     def __str__(self):
         return f"Comentari de {self.usuari.username} a {self.ruta.nom}"
 

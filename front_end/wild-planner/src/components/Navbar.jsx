@@ -60,8 +60,10 @@ const Navbar = () => {
     const handleLogout = () => {
         // Netegem exactament les claus que has definit al Login
         localStorage.removeItem('token');
+        localStorage.removeItem('accessToken');
         localStorage.removeItem('userId');
         localStorage.removeItem('username');
+        localStorage.removeItem('userRol');
 
         // Actualitzem l'estat local per a un canvi visual instantani
         setIsAuthenticated(false);

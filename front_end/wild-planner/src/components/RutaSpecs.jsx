@@ -3,8 +3,8 @@ import React from 'react';
 //RutaSpecs recibe la ruta y muestra los datos técnicos en tarjetas
 const RutaSpecs = ({ ruta }) => {
 
-    //definimos las tarjetas como un array para poder hacer map() (en vez de escribir cada tarjeta manual una por una)
-    //Cada tarjeta tiene: icono, etiqueta y valor
+    // definimos las tarjetas como un array para poder hacer map() (en vez de escribir cada tarjeta manual una por una)
+    // Cada tarjeta tiene: icono, etiqueta, valor y opcionalmente un color
     const specs = [
         {
             icon:  'route',
@@ -20,12 +20,20 @@ const RutaSpecs = ({ ruta }) => {
         {
             icon:  'trending_down',
             label: 'Desnivell negatiu',
-            value: `+${ruta.desnivell_negatiu} m`},
+            value: `+${ruta.desnivell_negatiu} m`
+        },
         {
             icon:  'landscape',
             label: 'Modalitat',
             value: ruta.modalitat,
-        }
+        },
+        // AFEGIT: Inserim la targeta de verificat només si ruta.es_verificada és true
+        ...(ruta.es_verificada ? [{
+            icon:  'verified',
+            label: 'Estat de la ruta',
+            value: 'Verificada',
+            color: '#28a745' // Afegeixo un verd per destacar-ho
+        }] : [])
     ];
 
     return (
@@ -35,10 +43,18 @@ const RutaSpecs = ({ ruta }) => {
                 // key es obligatorio cuando haces map() en React
                 // sirve para que React identifique cada elemento de la lista
                 <div key={index} className="spec-card">
-                    <span className="material-symbols-outlined spec-icon">{spec.icon}</span>
+                    <span 
+                        className="material-symbols-outlined spec-icon"
+                        // Apliquem el color verd si la propietat 'color' existeix en aquest spec
+                        style={spec.color ? { color: spec.color } : {}}
+                    >
+                        {spec.icon}
+                    </span>
                     <div>
                         <p className="spec-label">{spec.label}</p>
-                        <p className="spec-value">{spec.value}</p>
+                        <p className="spec-value" style={spec.color ? { color: spec.color, fontWeight: 'bold' } : {}}>
+                            {spec.value}
+                        </p>
                     </div>
                 </div>
             ))}

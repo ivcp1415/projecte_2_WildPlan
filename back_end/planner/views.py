@@ -237,3 +237,51 @@ def add_opinion(request):
             return Response(com_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             
     return Response(val_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['DELETE'])
+@permission_classes([RolePermission])
+def delete_opinio(request, pk):
+    try:
+        # Busquem el comentari per la seva PK
+        comentari = Comentari.objects.get(id=pk)
+    except Comentari.DoesNotExist:
+        return Response({'error': 'Opinió no trobada.'}, status=status.HTTP_404_NOT_FOUND)
+
+    # Comprovació de seguretat bàsica
+    if not hasattr(request, 'user') or request.user is None:
+        return Response({'error': 'No autenticat.'}, status=status.HTTP_401_UNAUTHORIZED)
+
+    # Restricció: Només el propietari del comentari o un 'admin' ho poden eliminar
+    if comentari.usuari != request.user and request.user.rol != 'admin':
+        return Response({'error': 'No tens permís per eliminar aquesta opinió.'}, status=status.HTTP_403_FORBIDDEN)
+
+    # Relació: Esborrem la Valoracio. Per l'on_delete=CASCADE del model Comentari, 
+    # això eliminarà també el Comentari automàticament.
+    valoracio = comentari.valoracio_rel
+    if valoracio:
+        valoracio.delete()
+    else:
+        # En cas que, per algun motiu d'inconsistència, no tingui valoració vinculada
+        comentari.delete()
+
+    return Response({'msg': "Opinió (valoració i comentari) eliminada correctament"}, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+@permission_classes([RolePermission])
+def verificar_ruta(request, pk):
+    try:
+        ruta = Ruta.objects.get(id=pk)
+    except Ruta.DoesNotExist:
+        return Response({'error': 'Ruta no trobada.'}, status=status.HTTP_404_NOT_FOUND)
+
+    # Comprovació de seguretat addicional: només l'admin pot fer això
+    if not hasattr(request, 'user') or request.user is None or getattr(request.user, 'rol', '') != 'admin':
+        return Response({'error': 'Només els administradors poden verificar rutes.'}, status=status.HTTP_403_FORBIDDEN)
+
+    # Canviem l'estat (de False a True, o de True a False si ho vols desfer algun cop)
+    ruta.es_verificada = not ruta.es_verificada
+    ruta.save()
+
+    estat_actual = "verificada" if ruta.es_verificada else "desverificada"
+
+    return Response({'msg': f"Ruta {estat_actual} correctament.", 'es_verificada': ruta.es_verificada}, status=status.HTTP_200_OK)

@@ -72,8 +72,8 @@ const LlistatRutesPropies = () => {
                     {rutes.map((ruta) => (
                         <div key={ruta.id} className="ruta-card" onClick={() => navigate(`/rutes/${ruta.id}`)}>
                             <div className="ruta-card-img">
-                                {ruta.url_imatges ? (
-                                    <img src={ruta.url_imatges} alt={ruta.nom} />
+                                {ruta.imatge_portada ? (
+                                    <img src={ruta.imatge_portada} alt={ruta.nom} />
                                 ) : (
                                     <div className="ruta-card-img-placeholder"><span>🏔</span></div>
                                 )}
