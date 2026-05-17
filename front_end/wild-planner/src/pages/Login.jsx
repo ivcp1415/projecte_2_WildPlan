@@ -42,7 +42,7 @@ const Login = () => {
         setIsLoading(true);
 
         try {
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/rutes/login/`, {
+            const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/planner/login/`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, password }),

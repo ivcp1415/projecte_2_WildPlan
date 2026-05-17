@@ -15,7 +15,7 @@ const DetallRuta = () => {
     //useParams coge el id de la URL: /rutes/5 → pk = "5"
     const { pk } = useParams();
     //URL base del backend, definifa en .env
-    const API_URL = process.env.REACT_APP_API_URL;
+    const API_URL = import.meta.env.VITE_APP_API_URL;
 
     //estados para guardar los datos que llegan del backend
     const [ruta, setRuta] = useState(null); //guarda el objero ruta ppal
@@ -30,16 +30,14 @@ const DetallRuta = () => {
     //dentro va el código que se ejecuta después de renderizar (o cuando cambia pk).
     //La primera parte () => { ... } es la función que se quiere ejecutar. La segunda parte [pk] se vuelve a ejecutar cuando cambia
     // DetallRuta.jsx optimitzat
-    console.log("hello")
     useEffect(() => {
         const fetchDades = async () => {
             setIsLoading(true);
             try {
-                const res = await fetch(`${API_URL}/rutes/rutes/${pk}/`);
+                const res = await fetch(`${API_URL}/planner/rutes/${pk}/`);
                 if (!res.ok) throw new Error("No s'ha pogut carregar la ruta.");
 
                 const data = await res.json();
-                console.log(data)
                 // 1. CORRECCIÓ: Guardem tots els estats que envia el backend
                 setRuta(data.ruta);
                 setComentaris(data.comentaris || []);

@@ -30,7 +30,7 @@ const Navbar = () => {
             const fetchUserProfile = async () => {
                 try {
                     // Petició a l'API de Django Rest Framework utilitzant el 'token' de localStorage
-                    const response = await fetch('http://localhost:8000/api/perfil/', {
+                    const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/planner/usuaris/${localStorage.getItem('userId')}/`, {
                         method: 'GET',
                         headers: {
                             // Utilitzem el format Bearer amb la clau 'token'

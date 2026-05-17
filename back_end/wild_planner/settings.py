@@ -37,11 +37,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest-framework'
+    'corsheaders',
+    'rest_framework',
+    'planner'
+
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -76,11 +80,11 @@ WSGI_APPLICATION = 'wild_planner.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'trek_db',
-        'USER': 'trek_admin',
-        'PASSWORD': 'trek_password',
+        'NAME': 'wildplan_db',     # <-- El nom de la BD del docker-compose
+        'USER': 'admin',           # <-- Canvia 'trek_admin' per 'admin'
+        'PASSWORD': 'admin',       # <-- La contrasenya que vas posar al docker
         'HOST': 'localhost',
-        'PORT': '5432',
+        'PORT': '5432',            
     }
 }
 
@@ -131,3 +135,9 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # L'URL pública per accedir a les fotos (ex: http://localhost:8000/media/usuaris/perfils/foto.jpg)
 MEDIA_URL = '/media/'
+
+# CORS Configuration
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]

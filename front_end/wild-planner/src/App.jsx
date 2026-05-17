@@ -17,7 +17,7 @@ function App() {
         <Route path="/rutes/meves" element={<LlistatRutesPropies />} />
 
         {/* Quan l'usuari entri a http://localhost:3000/ veurà directament el Login */}
-        <Route path="/" element={<LlistatRutes   />} />
+        <Route path="/" element={<LlistatRutes />} />
 
         {/* També podem definir la ruta /login explícitament */}
         <Route path="/login" element={<Login />} />

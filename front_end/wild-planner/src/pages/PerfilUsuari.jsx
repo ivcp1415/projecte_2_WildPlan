@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import Navbar from "../components/Navbar.jsx";
 import Footer from "../components/Footer.jsx";
-import PerfilCard from "../components/PerfilCard";
+import PerfilCard from "../components/PerfilCard.jsx";
 import "../styles/perfil.css";
 
 // Component de Pàgina de Perfil: Dinàmic i amb control d'estats
@@ -25,7 +25,7 @@ function PerfilUsuari() {
     }
 
     // Fem la crida a l'endpoint de l'usuari amb el token de seguretat
-    fetch(`http://127.0.0.1:8000/rutes/usuaris/${usuariId}/`, {
+    fetch(`${import.meta.env.VITE_APP_API_URL}/planner/usuaris/${usuariId}/`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`, // Enviem el token per complir amb la seguretat de l'API

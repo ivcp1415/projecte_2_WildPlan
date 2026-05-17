@@ -119,10 +119,10 @@ const Registre = () => {
 
         setIsLoading(true);
 
-        console.log("URL de l'API:", process.env.REACT_APP_API_URL);
+        console.log("URL de l'API:", import.meta.env.VITE_APP_API_URL);
 
         try {
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/rutes/registre/`, {
+            const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/planner/registre/`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

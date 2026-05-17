@@ -43,6 +43,7 @@ const crearIconaNode = (lletra, color) => L.divIcon({
 const getLletra = (index) => String.fromCharCode(65 + index);
 
 export default function Rutes() {
+    const API_URL = import.meta.env.VITE_APP_API_URL;
     const [nomRuta, setNomRuta] = useState(() => {
         return localStorage.getItem('ruta_esborrany_nom') || 'La meva nova ruta';
     });
@@ -187,7 +188,7 @@ export default function Rutes() {
         try {
             const token = localStorage.getItem('token');
 
-            const response = await fetch('http://127.0.0.1:8000/rutes/crear_rutes/', {
+            const response = await fetch(`${API_URL}/planner/rutes/crear/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
