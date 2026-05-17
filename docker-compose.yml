@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  frontend:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    depends_on:
+      - backend
+
+  backend:
+    image: python:3.10-slim
+    command: python app.py
+    environment:
+      - DB_HOST=${DB_HOST:-db}
+      - DB_PORT=${DB_PORT:-5432}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - DB_NAME=${DB_NAME}
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  db_data:
+    name: db_data
