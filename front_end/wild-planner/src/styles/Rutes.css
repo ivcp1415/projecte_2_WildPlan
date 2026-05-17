@@ -1,0 +1,203 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
+
+:root {
+    --bg-panel: #ffffff;
+    --bg-app: #f1f3f4;
+    --text-main: #202124;
+    --text-muted: #5f6368;
+    --border-color: #dadce0;
+    --input-bg: #f1f3f4;
+    --font-main: 'Plus Jakarta Sans', sans-serif;
+
+    --color-primary: #173124;
+    --color-primary-container: #2d4739;
+}
+
+body {
+    margin: 0;
+    font-family: var(--font-main);
+    background-color: var(--bg-app);
+}
+
+.material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* =========================================
+   Layout Base (Pantalla Dividida)
+========================================= */
+.app-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+}
+
+.main-content {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+
+
+/* Caixes d'imatges */
+.image-placeholders { display: flex; gap: 8px; margin-bottom: 24px; }
+.img-box { background-color: var(--input-bg); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.75rem; text-align: center;}
+.main-img { flex: 2; height: 140px; }
+.img-icon { font-size: 32px; color: #bdc1c6; margin-bottom: 8px; }
+.img-box-col { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+.sub-img { flex: 1; }
+
+/* Controls de Ruta */
+.route-header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.section-subtitle { font-size: 1rem; font-weight: 600; margin: 0; color: var(--text-main); }
+.sport-selector { background: transparent; border: none; font-size: 0.8rem; font-weight: 600; color: var(--text-main); display: flex; align-items: center; gap: 4px; cursor: pointer; }
+
+/* Llista Punts (A, B...) */
+.waypoints-container { display: flex; flex-direction: column; gap: 8px; }
+.waypoint-row { display: flex; align-items: center; gap: 12px; height: 48px; }
+
+.empty-state-text { font-size: 0.85rem; color: var(--text-muted); font-style: italic; padding: 8px 0;}
+
+.waypoint-icon-wrapper {
+    display: flex; flex-direction: column; align-items: center; position: relative; width: 24px; height: 100%; justify-content: center;
+}
+.waypoint-dot { width: 24px; height: 24px; border-radius: 50%; color: white; font-size: 12px; font-weight: bold; display: flex; align-items: center; justify-content: center; z-index: 2; }
+.placeholder-dot { background-color: transparent; color: var(--text-muted); border: 2px dashed var(--border-color); }
+
+.waypoint-connecting-line {
+    position: absolute; top: 50%; bottom: -50%; width: 2px; background-color: var(--border-color); z-index: 1;
+}
+
+.waypoint-input-wrapper { flex: 1; position: relative; display: flex; align-items: center; }
+.pill-input {
+    width: 100%; height: 40px; border-radius: 20px; border: 1px solid var(--border-color);
+    padding: 0 36px 0 16px; font-family: var(--font-main); font-size: 0.875rem; color: var(--text-main); outline: none; background: white;
+}
+.pill-input:focus { border-color: #4285F4; }
+.empty-pill { border: 1px dashed var(--border-color); color: var(--text-muted); background: transparent; }
+
+.delete-node-btn { position: absolute; right: 8px; background: transparent; border: none; color: var(--text-muted); cursor: pointer; padding: 4px; }
+.delete-node-btn:hover { color: #EA4335; }
+
+/* Cercador inferior */
+.search-bar-wrapper { position: relative; display: flex; align-items: center; margin-top: 16px; }
+.search-input { width: 100%; height: 44px; border-radius: 22px; border: none; background-color: var(--input-bg); padding: 0 40px; font-family: inherit; font-size: 0.9rem; outline: none; }
+.search-icon { position: absolute; left: 16px; color: var(--text-muted); }
+
+/* Divisor i Suggeriments */
+.divider { border: none; border-top: 1px solid var(--border-color); margin: 24px 0; }
+.suggestions-title { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin: 0 0 16px 0; }
+.suggestions-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 16px; }
+.suggestion-item { display: flex; align-items: center; gap: 16px; font-size: 0.9rem; color: var(--text-main); }
+.suggestion-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; }
+.bg-blue { color: #1967D2; background-color: #E8F0FE; }
+.bg-green { color: #137333; background-color: #E6F4EA; }
+
+
+
+.btn-save {
+    width: 100%; padding: 12px; border-radius: 24px; font-size: 0.9rem; font-weight: 600;
+    display: flex; justify-content: center; align-items: center; gap: 8px; border: none; cursor: pointer; font-family: inherit; transition: all 0.2s;
+}
+.btn-active { background-color: #4285F4; color: white; }
+.btn-active:hover { background-color: #1a73e8; box-shadow: 0 4px 6px rgba(66, 133, 244, 0.3); transform: translateY(-1px); }
+.btn-disabled { background-color: var(--input-bg); color: var(--text-muted); cursor: not-allowed; }
+
+/* =========================================
+   Àrea del Mapa
+========================================= */
+.map-area {
+    flex: 1;
+    position: relative;
+    background-color: var(--border-color);
+}
+
+/* Fix per a Leaflet */
+.leaflet-container {
+    height: 100% !important;
+    width: 100% !important;
+}
+.leaflet-container:focus { outline: none; }
+
+/* Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar { width: 6px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background-color: var(--border-color); border-radius: 10px; }
+
+/* =========================================
+   BARRA INFERIOR D'ESTADÍSTIQUES (ESTIL KOMOOT)
+========================================= */
+.komoot-bottom-bar {
+    position: absolute;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    border-radius: 16px;
+    padding: 12px 24px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    white-space: nowrap;
+}
+
+.stat-block {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.stat-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #333;
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    color: #777;
+    margin-top: 2px;
+}
+
+.difficulty-badge {
+    padding: 4px 12px;
+    border-radius: 12px;
+    color: white;
+    font-size: 0.85rem;
+    font-weight: bold;
+}
+
+.mini-profile-container {
+    height: 30px;
+    width: 100px;
+    border-bottom: 2px solid #e0e0e0;
+    margin-left: 12px;
+}
+
+.btn-desnivel {
+    background: #f1f3f4;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 600;
+    color: #333;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: 8px;
+}
+
+.btn-desnivel:hover {
+    background: #e8eaed;
+}

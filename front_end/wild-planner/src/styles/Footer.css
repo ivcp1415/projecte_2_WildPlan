@@ -1,0 +1,40 @@
+/* -------------------------------------------------------------------
+   FOOTER DE PÀGINA (com al Stitch, el Login no en té)
+------------------------------------------------------------------- */
+.registre-footer {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    border-top: 1px solid rgba(194, 200, 194, 0.2);
+    background-color: var(--color-surface-low);
+    padding: 32px 16px;
+    text-align: center;
+    margin-top: auto;
+}
+
+.registre-footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin-bottom: 8px;
+}
+
+.registre-footer-links a {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-outline);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.registre-footer-links a:hover {
+    color: var(--color-primary);
+}
+
+.registre-footer p {
+    font-size: 14px;
+    color: var(--color-outline);
+    margin: 0;
+}

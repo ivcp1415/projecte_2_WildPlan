@@ -1,0 +1,168 @@
+/* src/pages/Registre.css */
+
+/* Importem Login.css per reutilitzar TOTES les seves classes:
+   .login-card, .form-group, .form-label, .form-input, .input-container,
+   .input-icon-left, .btn-icon-right, .btn-submit, .error-box,
+   .error-message, .login-footer, .register-link, .logo-group, etc. */
+@import './Login.css';
+
+/* -------------------------------------------------------------------
+   REGISTRE-PAGE
+   Igual que .login-page però amb scroll perquè el formulari és més llarg
+------------------------------------------------------------------- */
+.registre-page {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    overflow-x: hidden;
+    color: var(--color-on-surface);
+}
+
+/* Reutilitzem .bg-image i .bg-overlay de Login.css — no cal redefinir-les */
+
+/* -------------------------------------------------------------------
+   REGISTRE-CARD-CONTAINER
+   Una mica més ample que el login perquè té més camps
+------------------------------------------------------------------- */
+.registre-card-container {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 480px;
+    padding: 32px 16px;
+    /* No és flex centrat verticalment com el login,
+       perquè el formulari és llarg i ha de poder fer scroll */
+}
+.logo-img {
+    height: 60px;
+    width: auto;
+}
+/* -------------------------------------------------------------------
+   BLOC DE TÍTOL DEL FORMULARI
+   El Login no té h2 separat, el Registre sí (com al Stitch)
+------------------------------------------------------------------- */
+.registre-title-block {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.registre-title {
+    font-size: 32px;
+    font-weight: 600;
+    color: var(--color-on-surface);
+    margin: 0 0 8px 0;
+    letter-spacing: -0.5px;
+}
+
+.registre-subtitle {
+    font-size: 16px;
+    color: var(--color-on-surface-variant);
+    margin: 0;
+}
+
+/* -------------------------------------------------------------------
+   TEXTAREA (camp biografia)
+   El Login no té textarea, per això cal afegir-lo aquí
+------------------------------------------------------------------- */
+.form-textarea {
+    width: 100%;
+    box-sizing: border-box;
+    background-color: var(--color-surface);
+    color: var(--color-on-surface);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 16px;
+    border-radius: var(--border-radius-lg);
+    border: 1px solid var(--color-outline);
+    padding: 12px 16px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    resize: vertical;
+    min-height: 80px;
+}
+
+.form-textarea:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 1px var(--color-primary);
+}
+
+.form-textarea::placeholder {
+    color: var(--color-outline-variant);
+}
+
+.form-textarea:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* -------------------------------------------------------------------
+   CHECKBOX TERMES
+   El Login no té checkbox, per això cal afegir-lo aquí
+------------------------------------------------------------------- */
+.registre-checkbox-group {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 16px;
+    margin-top: 4px;
+}
+
+.registre-checkbox {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    accent-color: var(--color-primary);
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.registre-checkbox-label {
+    font-size: 14px;
+    color: var(--color-on-surface-variant);
+    cursor: pointer;
+    line-height: 1.5;
+}
+
+/* -------------------------------------------------------------------
+   FOOTER DE PÀGINA (com al Stitch, el Login no en té)
+------------------------------------------------------------------- */
+.registre-footer {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    border-top: 1px solid rgba(194, 200, 194, 0.2);
+    background-color: var(--color-surface-low);
+    padding: 32px 16px;
+    text-align: center;
+    margin-top: auto;
+}
+
+.registre-footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin-bottom: 8px;
+}
+
+.registre-footer-links a {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-outline);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.registre-footer-links a:hover {
+    color: var(--color-primary);
+}
+
+.registre-footer p {
+    font-size: 14px;
+    color: var(--color-outline);
+    margin: 0;
+}

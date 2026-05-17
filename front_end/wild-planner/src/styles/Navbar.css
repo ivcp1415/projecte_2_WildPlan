@@ -1,0 +1,188 @@
+/* =========================================
+   VARIABLES GLOBALS DE COLOR (Estil Summit)
+   Aquestes variables optimitzen el manteniment
+   i asseguren la coherència visual.
+   ========================================= */
+:root {
+    --primary: #173124;
+    --primary-container: #2d4739;
+    --on-primary: #ffffff;
+    --on-primary-container: #98b5a3;
+    --surface-container-lowest: #ffffff;
+    --surface-container-low: #f3f4f5;
+    --on-surface-variant: #424844;
+    --surface-variant: #e1e3e4;
+    --error: #ba1a1a;
+    --font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* =========================================
+   CONTENIDOR PRINCIPAL DEL NAVBAR
+   ========================================= */
+.navbar-premium {
+    position: sticky; /* Es manté a dalt al fer scroll */
+    top: 0;
+    z-index: 50; /* Assegura que quedi per sobre de la resta del contingut */
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(12px); /* Efecte de vidre translúcid */
+    font-family: var(--font-family);
+    -webkit-font-smoothing: antialiased;
+    border-bottom: 1px solid var(--surface-variant);
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.navbar-container {
+    display: flex;
+    justify-content: space-between; /* Separa logo, links i perfil */
+    align-items: center;
+    height: 64px;
+    padding: 0 32px;
+    max-width: 100%;
+}
+
+/* =========================================
+   SECCIÓ ESQUERRA: LOGO I MARCA
+   ========================================= */
+.navbar-logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+
+.navbar-logo:hover {
+    opacity: 0.8;
+}
+
+.navbar-logo-icon {
+    font-size: 24px;
+    color: var(--primary);
+}
+
+.navbar-brand-name {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--primary);
+    letter-spacing: -0.025em;
+}
+
+/* =========================================
+   SECCIÓ CENTRAL: ENLLAÇOS DE NAVEGACIÓ
+   ========================================= */
+.navbar-links {
+    display: flex;
+    gap: 32px;
+}
+
+.navbar-link {
+    color: var(--on-surface-variant);
+    background: transparent;
+    border: none;
+    font-size: 16px;
+    font-weight: 500;
+    font-family: inherit;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+/* Efecte visual en passar el ratolí per sobre */
+.navbar-link:hover {
+    color: var(--primary);
+    background-color: var(--surface-container-low);
+}
+
+/* Efecte de clic */
+.navbar-link:active {
+    transform: scale(0.95);
+}
+
+/* =========================================
+   SECCIÓ DRETA: ACCIONS I PERFIL
+   ========================================= */
+.navbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.navbar-user-section,
+.navbar-guest-section {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+/* Text de benvinguda per a l'usuari loguejat */
+.navbar-greeting {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--on-surface-variant);
+}
+
+/* =========================================
+   BOTONS D'ACCIÓ (Login, Registre, Logout)
+   ========================================= */
+.navbar-btn {
+    padding: 8px 16px;
+    border-radius: 9999px; /* Botons completament arrodonits */
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease-in-out;
+}
+
+.navbar-btn:active {
+    transform: scale(0.95);
+}
+
+/* Estil principal (ex: Botó d'Accedir) */
+.btn-primary {
+    background-color: var(--primary);
+    color: var(--on-primary);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-container);
+    color: var(--on-primary-container);
+}
+
+/* Estil destructiu (ex: Botó de Tancar Sessió) */
+.btn-logout {
+    background-color: transparent;
+    color: var(--error);
+    border: 1px solid transparent;
+}
+
+.btn-logout:hover {
+    background-color: #ffdad6; /* Color de fons d'error suau */
+    border-color: var(--error);
+}
+
+.navbar-user-section {
+    display: flex;
+    align-items: center;
+    gap: 16px; /* Aquest espai separa el Greeting, el botó Perfil i el botó Sortir */
+}
+
+/* Opcional: Si vols que el botó de perfil tingui un color lleugerament diferent al d'Accedir */
+/*
+.btn-primary { ... }
+*/
+
+/* =========================================
+   RESPONSIU (Opcional per a mòbils)
+   ========================================= */
+@media (max-width: 768px) {
+    .navbar-links {
+        display: none; /* Amaguem els enllaços centrals en pantalles petites */
+    }
+    .navbar-container {
+        padding: 0 16px;
+    }
+}
