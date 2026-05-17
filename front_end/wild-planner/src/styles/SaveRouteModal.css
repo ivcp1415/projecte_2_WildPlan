@@ -1,0 +1,158 @@
+/* src/styles/SaveRouteModal.css */
+
+.save-route-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.save-route-modal-content {
+    background-color: white;
+    padding: 30px;
+    border-radius: 12px;
+    width: 450px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.save-route-modal-title {
+    color: #333;
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+.save-route-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.save-route-form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.save-route-label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.save-route-input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    font-family: inherit;
+}
+
+.save-route-textarea {
+    resize: none;
+}
+
+.save-route-stats-container {
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 8px;
+    font-size: 0.9em;
+    border: 1px solid #eee;
+}
+
+.save-route-stats-row {
+    display: flex;
+    justify-content: space-between;
+}
+
+.save-route-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.save-route-btn {
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 1em;
+}
+
+.save-route-btn-cancel {
+    border: 1px solid #ccc;
+    background: #f5f5f5;
+    color: #333;
+}
+
+.save-route-btn-cancel:hover {
+    background: #e0e0e0;
+}
+
+.save-route-btn-save {
+    border: none;
+    background: #85C743;
+    color: white;
+    font-weight: bold;
+}
+
+.save-route-btn-save:hover {
+    background: #75b338;
+}
+
+/* --- Success Modal Specific Styles --- */
+
+.success-modal-content {
+    text-align: center;
+    padding: 40px 30px;
+}
+
+.success-icon-container {
+    color: #34A853;
+    margin-bottom: 20px;
+}
+
+.success-icon {
+    font-size: 64px;
+}
+
+.success-title {
+    margin-bottom: 10px;
+}
+
+.success-subtitle {
+    color: #666;
+    margin-bottom: 30px;
+    margin-top: 0;
+}
+
+.success-button-group {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Flex layout specifically for the buttons inside the success modal */
+.success-btn-layout {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+}
+
+.success-btn-export {
+    background: #4285F4;
+    color: white;
+    border: none;
+}
+
+.success-btn-export:hover {
+    background: #3367d6;
+}

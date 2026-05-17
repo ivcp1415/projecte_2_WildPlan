@@ -1,0 +1,17 @@
+.top-nav {
+    height: 64px;
+    background-color: #ffffff;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 32px;
+    z-index: 50;
+    flex-shrink: 0;
+}
+
+.nav-left { display: flex; align-items: center; gap: 32px; height: 100%; }
+.brand-title { font-size: 1.25rem; font-weight: 700; color: var(--color-primary-container); }
+.nav-links { display: flex; gap: 24px; height: 100%; }
+.nav-link { color: var(--text-muted); font-weight: 600; font-size: 0.875rem; display: flex; align-items: center; text-decoration: none; }
+.active-link { color: var(--color-primary-container); border-bottom: 2px solid var(--color-primary-container); }
