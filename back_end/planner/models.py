@@ -1,32 +1,29 @@
 from django.db import models
-
-# Create your models here.
-from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.db.models import ImageField
-
 
 # ==========================================
 # 1. USUARI PERSONALITZAT
 # ==========================================
 class Usuari(models.Model):
     ROLS = [
+        ('usuari', 'Usuari'),
         ('freemium', 'Freemium'),
-        ('premium', 'Premium'),
         ('admin', 'Administrador')
     ]
 
-    descripcio = models.TextField(blank=True, null=True)
     username = models.CharField(max_length=150, unique=True) # Nom d'usuari únic
     email = models.EmailField(unique=True) # Correu electrònic únic per usuari
+    password = models.CharField(max_length=128) # Password
+
+    descripcio = models.TextField(blank=True, null=True)
     data_naixement = models.DateField(null=True, blank=True) # Opcional
     biografia = models.TextField(null=True, blank=True) # Text llarg per la bio
-    rol = models.CharField(max_length=10, choices=ROLS, default='freemium') # rol d'usuari
     url_foto_perfil = models.URLField(null=True, blank=True) # Enllaç a la imatge de perfil
-    password = models.CharField(max_length=128) # password
+    
+    rol = models.CharField(max_length=15, choices=ROLS, default='usuari') # Rol d'usuari
 
     def __str__(self):
-        return f"{self.username} ({self.rol})"
+        return self.username
 
 # ==========================================
 # 2. RUTA I GEOMETRIA (ESTIL KOMOOT)
@@ -36,29 +33,53 @@ class Ruta(models.Model):
         ('senderisme', 'Senderisme'),
         ('alpinisme', 'Alpinisme'),
         ('btt', 'Bicicleta BTT'),
-        ('trail_running', 'Trail Running')
+        ('trail_running', 'Trail Running'),
+        ('escalada', 'Escalada'),
+        ('esqui', 'Esquí'),
+        ('altra', 'Altra'),
     ]
-    nom = models.CharField(max_length=150)
+
+    DIFICULTATS = [
+        ('facil', 'Fàcil - Per a tots els públics'),
+        ('moderada', 'Moderada - Requereix certa forma física'),
+        ('dificil', 'Difícil - Desnivell o terreny exigent'),
+        ('molt_dificil', 'Molt difícil - Només per a experts'),
+        ('extrema', 'Extrema - Risc elevat o equipament especial'),
+    ]
+
+    dificultat = models.CharField(
+        max_length=20, 
+        choices=DIFICULTATS, 
+        default='moderada',
+        help_text="Nivell general de dificultat de la ruta"
+    )
+    
+    nom = models.CharField(max_length=200)
     descripcio = models.TextField(blank=True, null=True)
-    modalitat = models.CharField(max_length=50, choices=MODALITATS, null=True, blank=True)
+    modalitat = models.CharField(max_length=50, choices=MODALITATS, default='senderisme')
 
     usuari = models.ForeignKey(
-        'Usuari',
-        on_delete=models.SET_NULL,
-        null=True,
+        Usuari,
+        on_delete=models.CASCADE,
         related_name='rutes_creades'
     )
 
-    # Fotos simplificades en la mateixa taula
+    # Imatges
     imatge_portada = models.URLField(max_length=255, blank=True, null=True)
     galeria_fotos = models.JSONField(default=list, blank=True, help_text="Llista d'URLs de fotos")
+    
+    # Dades tècniques
     es_verificada = models.BooleanField(default=False)
-    distancia = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True, help_text="En km")
-    desnivell_positiu = models.IntegerField(null=True, blank=True, help_text="En metres")
+    distancia = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True, help_text="En km")
+    desnivell_positiu = models.IntegerField(default=0, help_text="En metres")
+    desnivell_negatiu = models.IntegerField(default=0, help_text="En metres")
     temps_estimat = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True, help_text="En hores")
-    mapa_gps = models.JSONField(null=True, blank=True, help_text="Track complet opcional")
-    data_creacio = models.DateField(auto_now_add=True) # S'assigna la data actual automàticament
-
+    
+    # Tracks i Mapes
+    track_complet = models.JSONField(null=True, blank=True, help_text="GeoJSON complet pre-unit per al mapa.")
+    perfil_elevacio = models.JSONField(null=True, blank=True, help_text="Array amb les dades detallades de distància i elevació")
+    
+    data_creacio = models.DateField(auto_now_add=True)
 
     def __str__(self):
         return self.nom
@@ -66,9 +87,10 @@ class Ruta(models.Model):
 class ItinerariNode(models.Model):
     ruta = models.ForeignKey(Ruta, on_delete=models.CASCADE, related_name='nodes')
     ordre = models.IntegerField()
+    # Es manté la precisió alta per evitar errors de GPS
     latitud = models.DecimalField(max_digits=10, decimal_places=8)
     longitud = models.DecimalField(max_digits=11, decimal_places=8)
-    altitud = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True)
+    altitud = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
     es_waypoint = models.BooleanField(default=True)
     nom_punt = models.CharField(max_length=150, blank=True, null=True)
 
@@ -83,10 +105,15 @@ class Tram(models.Model):
     node_origen = models.ForeignKey(ItinerariNode, on_delete=models.CASCADE, related_name='trams_sortida')
     node_desti = models.ForeignKey(ItinerariNode, on_delete=models.CASCADE, related_name='trams_arribada')
 
-    geometria_segment = models.JSONField(null=True, blank=True, help_text="Track calculat per ORS per a aquest segment")
-    distancia_metres = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True)
+    # Dades geomètriques i càlculs
+    track_geojson = models.JSONField(null=True, blank=True, help_text="Track calculat per ORS o coordenades exactes")
+    distancia_metres = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
     desnivell_positiu = models.IntegerField(null=True, blank=True)
+    desnivell_negatiu = models.IntegerField(default=0, null=True, blank=True)
     temps_estimat_minuts = models.IntegerField(null=True, blank=True)
+
+    def __str__(self):
+        return f"Tram de {self.node_origen.id} a {self.node_desti.id}"
 
 class Servei(models.Model):
     TIPUS_SERVEI = [
@@ -100,7 +127,7 @@ class Servei(models.Model):
 
     ruta = models.ForeignKey(Ruta, on_delete=models.CASCADE, related_name='serveis')
     node = models.ForeignKey(ItinerariNode, on_delete=models.SET_NULL, null=True, blank=True, related_name='serveis_node')
-    tipus = models.CharField(max_length=50, choices=TIPUS_SERVEI) # Ex: 'font', 'refugi', 'botiga'
+    tipus = models.CharField(max_length=50, choices=TIPUS_SERVEI)
     nom = models.CharField(max_length=150)
     descripcio = models.TextField(blank=True, null=True)
     te_cost = models.BooleanField(default=False)
@@ -113,23 +140,22 @@ class Servei(models.Model):
 # ==========================================
 class Valoracio(models.Model):
     usuari = models.ForeignKey(Usuari, on_delete=models.CASCADE)
-    ruta = models.ForeignKey(Ruta, on_delete=models.CASCADE, related_name='puntuacions')
-    puntuacio = models.IntegerField()  # La nota de l'1 al 5
-    like = models.BooleanField()
+    ruta = models.ForeignKey(Ruta, on_delete=models.CASCADE, related_name='valoracions')
+    puntuacio = models.IntegerField(null=True, blank=True)  # La nota de l'1 al 5
+    like = models.BooleanField() # True = Like, False = Dislike
     data_valoracio = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         unique_together = ('usuari', 'ruta')
 
     def __str__(self):
-        return f"{self.puntuacio} estrelles de {self.usuari.username} a {self.ruta.nom}"
+        return f"Valoració de {self.usuari.username} a {self.ruta.nom}"
 
 class Comentari(models.Model):
     usuari = models.ForeignKey(Usuari, on_delete=models.CASCADE)
     ruta = models.ForeignKey(Ruta, on_delete=models.CASCADE, related_name='comentaris')
 
-    # RELACIÓ CLAU: Enllacem el comentari amb la seva valoració
-    # Fem servir OneToOneField perquè un comentari només té una valoració associada
+    # Enllacem el comentari amb la seva valoració (OneToOne)
     valoracio_rel = models.OneToOneField(
         Valoracio,
         on_delete=models.CASCADE,
@@ -140,6 +166,9 @@ class Comentari(models.Model):
 
     descripcio = models.TextField()
     data_creacio = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Comentari de {self.usuari.username} a {self.ruta.nom}"
 
 # ==========================================
 # 4. LOGÍSTICA (INDEPENDENT)
@@ -239,9 +268,9 @@ class AlertaDinamica(models.Model):
     url_font_oficial = models.URLField(max_length=255, blank=True, null=True)
     data_creacio = models.DateTimeField(auto_now_add=True)
 
-
-
-### JWT AUTHENTICATION
+# ==========================================
+# 7. JWT AUTHENTICATION
+# ==========================================
 class TokenJWT2(models.Model):
     user = models.ForeignKey(Usuari, on_delete=models.CASCADE)
     token = models.TextField()
