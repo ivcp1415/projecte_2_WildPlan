@@ -52,6 +52,18 @@ const Login = () => {
                 throw new Error(data.error || 'Credencials incorrectes.');
             }
 
+            // If a different user was previously logged in, their draft state must be wiped
+            // to prevent PUT requests targeting routes that belong to someone else.
+            const previousUserId = localStorage.getItem('userId');
+            if (previousUserId && previousUserId !== String(data.user_id)) {
+                const draftKeys = [
+                    'ruta_esborrany_nom', 'ruta_esborrany_nodes', 'ruta_esborrany_trams',
+                    'plan_esborrany', 'ruta_editant_id', 'ruta_editant_meta',
+                    'ruta_editant_planificacio_id', 'ruta_editant_motxilla_id', 'ruta_editant_tab',
+                ];
+                draftKeys.forEach(k => localStorage.removeItem(k));
+            }
+
             localStorage.setItem('token', data.token);
             localStorage.setItem('accessToken', data.token);
             localStorage.setItem('userId', data.user_id);

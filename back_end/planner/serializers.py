@@ -243,7 +243,7 @@ class RutaMiniSerializer(serializers.ModelSerializer):
 class PlanificacioDetailSerializer(serializers.ModelSerializer):
     ruta = RutaMiniSerializer(read_only=True)
     motxilla = MotxillaDetailSerializer(read_only=True, allow_null=True)
-    despeses = PressupostDespesaSerializer(many=True, read_only=True, source='despeses')
+    despeses = PressupostDespesaSerializer(many=True, read_only=True)
     pressupost_total = serializers.SerializerMethodField()
 
     class Meta:

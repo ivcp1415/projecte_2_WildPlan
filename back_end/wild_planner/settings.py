@@ -11,16 +11,19 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 import os
 from pathlib import Path
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+load_dotenv(BASE_DIR / '.env')
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-zdc2n)#erty!)6uy@6h$p1_!7zewr7-paay@ndq4*x78nbza(e'
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -80,11 +83,11 @@ WSGI_APPLICATION = 'wild_planner.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'wildplan_db',     # <-- El nom de la BD del docker-compose
-        'USER': 'admin',           # <-- Canvia 'trek_admin' per 'admin'
-        'PASSWORD': 'admin',       # <-- La contrasenya que vas posar al docker
-        'HOST': 'localhost',
-        'PORT': '5432',            
+        'NAME': os.environ.get('DB_NAME', 'wildplan_db'),
+        'USER': os.environ.get('DB_USER', 'admin'),
+        'PASSWORD': os.environ.get('DB_PASSWORD', ''),
+        'HOST': os.environ.get('DB_HOST', 'localhost'),
+        'PORT': os.environ.get('DB_PORT', '5432'),
     }
 }
 

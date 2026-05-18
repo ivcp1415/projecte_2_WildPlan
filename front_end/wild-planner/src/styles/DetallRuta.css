@@ -213,6 +213,12 @@ body, .detall-page {
     .detall-main { padding: 16px; }
     .hero { height: 320px; }
     .hero-title { font-size: 26px; }
+    .hero-content { padding: 16px; }
+    .hero-desc { font-size: 14px; }
+    .detall-footer { padding: 16px; }
+    .detall-footer-links { gap: 12px; flex-wrap: wrap; }
+    .navbar { padding: 0 16px; }
+    .spec-value { font-size: 18px; }
 }
 
 /* ================================================================

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar.jsx';
 import RutaHero from '../components/RutaHero.jsx';
 import RutaSpecs from '../components/RutaSpecs.jsx';
@@ -9,12 +9,14 @@ import Comentaris from '../components/Comentaris.jsx';
 import Valoracions from '../components/Valoracions.jsx';
 import Footer from '../components/Footer.jsx';
 import ShareCard from '../components/ShareCard.jsx';
+import InventariMotxillaRuta from '../components/InventariMotxillaRuta.jsx';
 import '../styles/DetallRuta.css';
 
 const DetallRuta = () => {
 
     // useParams gets the id from the URL: /rutes/5 → pk = "5"
     const { pk } = useParams();
+    const navigate = useNavigate();
     
     // Backend base URL, defined in .env
     const API_URL = import.meta.env.VITE_APP_API_URL;
@@ -36,6 +38,9 @@ const DetallRuta = () => {
     const [showVerifyModal, setShowVerifyModal] = useState(false);
     const [isVerifying, setIsVerifying] = useState(false);
 
+    // State for cloning the route
+    const [isCloning, setIsCloning] = useState(false);
+
     const fetchDades = async () => {
         try {
             const res = await fetch(`${API_URL}/planner/rutes/${pk}/`);
@@ -53,6 +58,36 @@ const DetallRuta = () => {
         setIsLoading(true);
         fetchDades().finally(() => setIsLoading(false));
     }, [pk, API_URL]);
+
+    // Funció per clonar la ruta: carrega les dades al editor per desar-la com a pròpia
+    const handleCloneRoute = async () => {
+        if (!token) {
+            if (confirm("Cal iniciar sessió per a clonar una ruta. Vols anar a la pantalla d'inici de sessió?")) {
+                navigate('/login');
+            }
+            return;
+        }
+
+        setIsCloning(true);
+        try {
+            const res = await fetch(`${API_URL}/planner/rutes/${pk}/editar-dades/`);
+            if (!res.ok) throw new Error("No s'ha pogut carregar la ruta.");
+            const data = await res.json();
+
+            localStorage.setItem('ruta_esborrany_nom', `${data.nom} (còpia)`);
+            localStorage.setItem('ruta_esborrany_nodes', JSON.stringify(data.nodes));
+            localStorage.setItem('ruta_esborrany_trams', JSON.stringify(data.trams));
+            localStorage.removeItem('ruta_editant_id');
+            localStorage.removeItem('ruta_editant_meta');
+            localStorage.removeItem('plan_esborrany');
+
+            navigate('/planificar');
+        } catch (err) {
+            alert("Error carregant la ruta per a clonar.");
+        } finally {
+            setIsCloning(false);
+        }
+    };
 
     // Funció per verificar/desverificar la ruta
     const handleVerifyRoute = async () => {
@@ -189,13 +224,35 @@ const DetallRuta = () => {
                     <RutaSpecs ruta={ruta} />
                     <RutaMapa geoData={ruta.track_complet} />
                     <PerfilElevacio perfilData={ruta.perfil_elevacio} />
+                    <InventariMotxillaRuta rutaId={Number(pk)} />
                 </div>
 
                 {/* RIGHT COLUMN */}
                 <div className="detall-col-right" style={{ position: 'relative' }}>
-                    <div className="share-toolbar" style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
-                        <button 
-                            className="btn-share-toggle" 
+                    <div className="share-toolbar" style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginBottom: '1rem' }}>
+                        <button
+                            className="btn-clone-route"
+                            onClick={handleCloneRoute}
+                            disabled={isCloning}
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.5rem',
+                                padding: '0.5rem 1rem',
+                                cursor: isCloning ? 'wait' : 'pointer',
+                                borderRadius: '8px',
+                                background: '#173124',
+                                color: '#ffffff',
+                                border: 'none',
+                                fontWeight: 600
+                            }}
+                            title="Copia aquesta ruta a les teves rutes per a poder editar-la"
+                        >
+                            <span className="material-symbols-outlined">content_copy</span>
+                            {isCloning ? 'Clonant…' : 'Clonar a Les meves rutes'}
+                        </button>
+                        <button
+                            className="btn-share-toggle"
                             onClick={() => setShowShareCard(!showShareCard)}
                             style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1rem', cursor: 'pointer', borderRadius: '8px' }}
                         >

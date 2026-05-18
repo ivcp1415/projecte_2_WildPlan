@@ -155,6 +155,7 @@
     outline: none;
     transition: border-color 0.15s, box-shadow 0.15s;
     box-sizing: border-box;
+    padding-left: 40px;
 }
 
 .form-input::placeholder {

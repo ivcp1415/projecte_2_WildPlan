@@ -21,6 +21,7 @@ function App() {
         <Route path="/rutes/meves"   element={<LlistatRutesPropies />} />
         <Route path="/rutes/:pk"     element={<DetallRuta />} />
         <Route path="/crear-ruta"    element={<Rutes />} />
+        <Route path="/planificar"    element={<Rutes />} />
         <Route path="/perfil"        element={<PerfilUsuari />} />
         <Route path="/perfil/editar" element={<EditarPerfil />} />
       </Routes>

@@ -267,6 +267,139 @@ body {
   color: #3B6D11;
 }
 
+/* ── DOCUMENTACIÓ CRÍTICA ───────────────── */
+.docs-section {
+  background-color: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #E8E6DF;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(44,44,42,0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.docs-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #2C2C2A;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.docs-subtitle {
+  font-size: 13px;
+  color: #888780;
+  margin-top: -8px;
+}
+
+.docs-upload-zone {
+  border: 2px dashed #C8C6BF;
+  border-radius: 12px;
+  background-color: #F9F8F4;
+  padding: 32px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: border-color 0.15s, background-color 0.15s;
+}
+
+.docs-upload-zone:hover,
+.docs-upload-zone.drag-over {
+  border-color: #3B6D11;
+  background-color: #EAF3DE;
+}
+
+.docs-upload-icon {
+  font-size: 40px;
+  color: #888780;
+}
+
+.docs-upload-zone:hover .docs-upload-icon,
+.docs-upload-zone.drag-over .docs-upload-icon {
+  color: #3B6D11;
+}
+
+.docs-upload-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: #2C2C2A;
+}
+
+.docs-upload-hint {
+  font-size: 12px;
+  color: #888780;
+}
+
+.docs-file-list {
+  list-style: none;
+  border-top: 1px solid #E8E6DF;
+  padding-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.docs-file-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border: 1px solid #E8E6DF;
+  border-radius: 10px;
+  background-color: #F9F8F4;
+}
+
+.docs-file-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.docs-file-icon {
+  font-size: 22px;
+  color: #3B6D11;
+}
+
+.docs-file-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #2C2C2A;
+}
+
+.docs-file-size {
+  font-size: 11px;
+  color: #888780;
+  margin-top: 2px;
+}
+
+.docs-delete-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #888780;
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  border-radius: 6px;
+  transition: color 0.15s, background-color 0.15s;
+}
+
+.docs-delete-btn:hover {
+  color: #E24B4A;
+  background-color: #FDE8E8;
+}
+
+.docs-empty {
+  font-size: 13px;
+  color: #B0AEA8;
+  text-align: center;
+  padding: 8px 0;
+}
+
 /* ── RESPONSIVE ─────────────────────────── */
 @media (max-width: 600px) {
   .perfil-card {
@@ -287,5 +420,14 @@ body {
     flex-direction: column;
     gap: 16px;
     text-align: center;
+    padding: 24px 16px;
+  }
+
+  .perfil-username {
+    font-size: 22px;
+  }
+
+  .navbar {
+    padding: 0 16px;
   }
 }

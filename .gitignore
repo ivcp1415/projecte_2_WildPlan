@@ -16,3 +16,6 @@ db_data/
 # Variables d'entorn i arxius de sistema
 .env
 .DS_Store
+.claude
+.docs
+docs/
