@@ -1,0 +1,31 @@
+<<<<<<< HEAD
+.env
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.backup
+__pycache__/
+*.pyc
+*.exe
+=======
+.venv
+todo.txt
+# Entorn virtual i brossa del back (Python/Django)
+back_end/.venv/
+back_end/__pycache__/
+back_end/**/*.pyc
+.idea
+
+# Dependències i build del front (Node/React)
+front_end/node_modules/
+front_end/build/
+
+# Dades de la base de dades local (Docker)
+db_data/
+
+# Variables d'entorn i arxius de sistema
+.env
+.DS_Store
+>>>>>>> a3e7f66714327372878ba34ee11af9d7100dd666
+
+*.exe
