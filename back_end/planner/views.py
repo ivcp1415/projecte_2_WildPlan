@@ -849,14 +849,12 @@ def crear_alerta(request):
 
 
 # ==========================================
-# 8. CLIMA (proxy OpenWeatherMap)
+# 8. CLIMA (proxy Open-Meteo — free, no API key)
 # ==========================================
 @api_view(['GET'])
 @permission_classes([RolePermission])
 def get_clima(request):
-    import requests as http_req
     import datetime
-    from collections import defaultdict
 
     lat = request.query_params.get('lat')
     lon = request.query_params.get('lon')
@@ -867,63 +865,40 @@ def get_clima(request):
             status=status.HTTP_400_BAD_REQUEST,
         )
 
-    api_key = os.environ.get('OPENWEATHER_API_KEY', '')
-    if not api_key:
-        return Response(
-            {'error': 'OPENWEATHER_API_KEY no configurada al servidor.'},
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        )
-
-    owm_params = {'lat': lat, 'lon': lon, 'appid': api_key, 'units': 'metric', 'lang': 'ca'}
-
-    try:
-        current_res = http_req.get(
-            'https://api.openweathermap.org/data/2.5/weather',
-            params=owm_params, timeout=10,
-        )
-        current_res.raise_for_status()
-        current = current_res.json()
-
-        forecast_res = http_req.get(
-            'https://api.openweathermap.org/data/2.5/forecast',
-            params=owm_params, timeout=10,
-        )
-        forecast_res.raise_for_status()
-        forecast_raw = forecast_res.json()
-
-    except http_req.Timeout:
-        return Response(
-            {'error': 'OpenWeatherMap no ha respòs a temps. Torna-ho a provar.'},
-            status=status.HTTP_502_BAD_GATEWAY,
-        )
-    except http_req.RequestException as exc:
-        return Response(
-            {'error': f'Error consultant OpenWeatherMap: {str(exc)}'},
-            status=status.HTTP_502_BAD_GATEWAY,
-        )
-
     # --- Helpers ---
+    def wmo_to_icon(code):
+        code = int(code)
+        if code == 0:                return 'clear_day'
+        if code in (1, 2):           return 'partly_cloudy_day'
+        if code == 3:                return 'cloud'
+        if code in (45, 48):         return 'foggy'
+        if 51 <= code <= 67:         return 'rainy'
+        if 71 <= code <= 77:         return 'weather_snowy'
+        if 80 <= code <= 82:         return 'rainy'
+        if code in (85, 86):         return 'weather_snowy'
+        if code in (95, 96, 99):     return 'thunderstorm'
+        return 'cloud'
+
+    def wmo_to_text(code):
+        code = int(code)
+        texts = {
+            0: 'Cel serè', 1: 'Principalment serè', 2: 'Parcialment ennuvolat',
+            3: 'Ennuvolat', 45: 'Boira', 48: 'Boira amb glaç',
+            51: 'Plugim feble', 53: 'Plugim', 55: 'Plugim fort',
+            61: 'Pluja feble', 63: 'Pluja', 65: 'Pluja forta',
+            71: 'Neu feble', 73: 'Neu', 75: 'Neu forta', 77: 'Grànuls de neu',
+            80: 'Xàfecs febles', 81: 'Xàfecs', 82: 'Xàfecs forts',
+            85: 'Xàfecs de neu febles', 86: 'Xàfecs de neu',
+            95: 'Tempesta', 96: 'Tempesta amb calamarsa', 99: 'Tempesta forta',
+        }
+        return texts.get(code, 'Desconegut')
+
     def degrees_to_compass(deg):
         dirs = ['N', 'NE', 'E', 'SE', 'S', 'SO', 'O', 'NO']
         return dirs[round(float(deg) / 45) % 8]
 
-    def owm_icon_to_material(code):
-        mapping = {
-            '01d': 'clear_day',       '01n': 'clear_night',
-            '02d': 'partly_cloudy_day', '02n': 'partly_cloudy_night',
-            '03d': 'cloud',            '03n': 'cloud',
-            '04d': 'cloud',            '04n': 'cloud',
-            '09d': 'rainy',            '09n': 'rainy',
-            '10d': 'rainy',            '10n': 'rainy',
-            '11d': 'thunderstorm',     '11n': 'thunderstorm',
-            '13d': 'weather_snowy',    '13n': 'weather_snowy',
-            '50d': 'foggy',            '50n': 'foggy',
-        }
-        return mapping.get(code, 'cloud')
-
     def uv_label(uv):
-        if uv is None:
-            return 'N/D'
+        if uv is None: return 'N/D'
         uv = float(uv)
         if uv < 3:  return 'Baix'
         if uv < 6:  return 'Moderat'
@@ -931,76 +906,99 @@ def get_clima(request):
         if uv < 11: return 'Molt alt'
         return 'Extrem'
 
-    def ts_to_hhmm(ts, tz_offset):
-        return datetime.datetime.utcfromtimestamp(int(ts) + int(tz_offset)).strftime('%H:%M')
+    import urllib.request
+    import urllib.parse
+    import urllib.error
+    import json as _json
 
-    # --- Parse current weather ---
-    tz_offset = current.get('timezone', 0)
-    main      = current['main']
-    wind      = current.get('wind', {})
-    cond      = current['weather'][0]
-    rain_mm   = round(current.get('rain', {}).get('1h', 0), 1)
-
-    # Precipitation probability from nearest 3h forecast bucket
-    pop_pct = round(forecast_raw['list'][0]['pop'] * 100) if forecast_raw.get('list') else 0
-
-    # UV index — best-effort (deprecated /uvi works on many free keys)
-    uv_index = None
-    try:
-        uv_res = http_req.get(
-            'https://api.openweathermap.org/data/2.5/uvi',
-            params={'lat': lat, 'lon': lon, 'appid': api_key},
-            timeout=5,
-        )
-        if uv_res.ok:
-            uv_index = uv_res.json().get('value')
-    except Exception:
-        pass
-
-    # --- Build 7-day forecast from 3h buckets ---
-    day_names = ['Dl', 'Dt', 'Dc', 'Dj', 'Dv', 'Ds', 'Dg']
-    today = datetime.date.today()
-    daily = defaultdict(list)
-    for entry in forecast_raw.get('list', []):
-        date_key = datetime.datetime.utcfromtimestamp(
-            entry['dt'] + tz_offset
-        ).strftime('%Y-%m-%d')
-        daily[date_key].append(entry)
-
-    forecast_list = []
-    for date_str in sorted(daily.keys())[:7]:
-        entries    = daily[date_str]
-        entry_date = datetime.datetime.strptime(date_str, '%Y-%m-%d').date()
-        max_t = max(e['main']['temp_max'] for e in entries)
-        min_t = min(e['main']['temp_min'] for e in entries)
-        # Use the entry closest to midday for the representative icon
-        noon = min(
-            entries,
-            key=lambda e: abs(datetime.datetime.utcfromtimestamp(e['dt'] + tz_offset).hour - 12),
-        )
-        icon = owm_icon_to_material(noon['weather'][0]['icon'])
-        dia  = 'Avui' if entry_date == today else day_names[entry_date.weekday()]
-        forecast_list.append({'dia': dia, 'icon': icon, 'max': round(max_t), 'min': round(min_t)})
-
-    # --- Compose normalised response ---
-    data = {
-        'temperatura': round(main['temp']),
-        'sensacio':    round(main['feels_like']),
-        'condicio':    cond['description'].capitalize(),
-        'icon':        owm_icon_to_material(cond['icon']),
-        'vent': {
-            'velocitat': round(wind.get('speed', 0) * 3.6),
-            'direccio':  degrees_to_compass(wind.get('deg', 0)),
-            'rafegues':  round(wind.get('gust', wind.get('speed', 0)) * 3.6),
-        },
-        'precipitacio': pop_pct,
-        'mm':           rain_mm,
-        'uvIndex':      round(uv_index) if uv_index is not None else None,
-        'uvNivel':      uv_label(uv_index),
-        'sortida':      ts_to_hhmm(current['sys']['sunrise'], tz_offset),
-        'posta':        ts_to_hhmm(current['sys']['sunset'],  tz_offset),
-        'forecast':     forecast_list,
+    params = {
+        'latitude':        lat,
+        'longitude':       lon,
+        'current':         'temperature_2m,apparent_temperature,weather_code,'
+                           'wind_speed_10m,wind_gusts_10m,wind_direction_10m,'
+                           'precipitation,uv_index',
+        'hourly':          'precipitation_probability',
+        'daily':           'weather_code,temperature_2m_max,temperature_2m_min,'
+                           'precipitation_probability_max,sunrise,sunset',
+        'wind_speed_unit': 'kmh',
+        'timezone':        'auto',
+        'forecast_days':   '7',
     }
+
+    url = 'https://api.open-meteo.com/v1/forecast?' + urllib.parse.urlencode(params)
+
+    try:
+        with urllib.request.urlopen(url, timeout=10) as resp:
+            weather = _json.loads(resp.read().decode())
+    except urllib.error.URLError as exc:
+        return Response(
+            {'error': f'Error consultant Open-Meteo: {str(exc.reason)}'},
+            status=status.HTTP_502_BAD_GATEWAY,
+        )
+    except Exception as exc:
+        return Response(
+            {'error': f'Error inesperat: {str(exc)}'},
+            status=status.HTTP_502_BAD_GATEWAY,
+        )
+
+    try:
+        current = weather['current']
+        daily   = weather['daily']
+        hourly  = weather.get('hourly', {})
+
+        # Precipitation probability for the current hour
+        now_hour = current['time'][:13]  # "2026-05-22T14"
+        pop_pct = 0
+        for i, t in enumerate(hourly.get('time', [])):
+            if t[:13] == now_hour:
+                val = hourly['precipitation_probability'][i]
+                pop_pct = int(val) if val is not None else 0
+                break
+
+        # Sunrise/sunset come as "2026-05-22T06:30" → take last 5 chars
+        sunrise_str = daily['sunrise'][0][-5:] if daily.get('sunrise') else 'N/D'
+        sunset_str  = daily['sunset'][0][-5:]  if daily.get('sunset')  else 'N/D'
+
+        # 7-day forecast
+        day_names = ['Dl', 'Dt', 'Dc', 'Dj', 'Dv', 'Ds', 'Dg']
+        today = datetime.date.today()
+        forecast_list = []
+        for i, date_str in enumerate(daily.get('time', [])[:7]):
+            entry_date = datetime.date.fromisoformat(date_str)
+            dia = 'Avui' if entry_date == today else day_names[entry_date.weekday()]
+            forecast_list.append({
+                'dia':  dia,
+                'icon': wmo_to_icon(daily['weather_code'][i]),
+                'max':  round(daily['temperature_2m_max'][i]),
+                'min':  round(daily['temperature_2m_min'][i]),
+            })
+
+        uv = current.get('uv_index')
+
+        data = {
+            'temperatura': round(current['temperature_2m']),
+            'sensacio':    round(current['apparent_temperature']),
+            'condicio':    wmo_to_text(current['weather_code']),
+            'icon':        wmo_to_icon(current['weather_code']),
+            'vent': {
+                'velocitat': round(current.get('wind_speed_10m', 0)),
+                'direccio':  degrees_to_compass(current.get('wind_direction_10m', 0)),
+                'rafegues':  round(current.get('wind_gusts_10m', current.get('wind_speed_10m', 0))),
+            },
+            'precipitacio': pop_pct,
+            'mm':           round(current.get('precipitation', 0), 1),
+            'uvIndex':      round(uv) if uv is not None else None,
+            'uvNivel':      uv_label(uv),
+            'sortida':      sunrise_str,
+            'posta':        sunset_str,
+            'forecast':     forecast_list,
+        }
+    except Exception as exc:
+        import traceback
+        return Response(
+            {'error': f'Error processant dades: {str(exc)}', 'detail': traceback.format_exc()},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
 
     return Response(data, status=status.HTTP_200_OK)
 

@@ -65,7 +65,7 @@ function FinancesView({ planDraft, setPlanDraft, onGoToRuta, hasRoute, onSaveAll
       motxilla: {
         ...prev.motxilla,
         [key]: prev.motxilla[key].map((it) =>
-          it.local_id === localId ? { ...it, preu: Math.max(0, Number(preu) || 0) } : it
+          it.local_id === localId ? { ...it, preu } : it
         )
       }
     }));
@@ -85,8 +85,8 @@ function FinancesView({ planDraft, setPlanDraft, onGoToRuta, hasRoute, onSaveAll
       kind: r.kind,
       nom: r.nom,
       quantitat: r.quantitat,
-      preuUnitari: Number(r.preu) || 0,
-      import_despesa: (Number(r.preu) || 0) * (Number(r.quantitat) || 0)
+      preuUnitari: r.preu,
+      import_despesa: (parseFloat(r.preu) || 0) * (Number(r.quantitat) || 0)
     }));
   }, [rows]);
 
@@ -311,7 +311,7 @@ function FinancesView({ planDraft, setPlanDraft, onGoToRuta, hasRoute, onSaveAll
                       className="finances-price-input"
                       value={d.import_despesa}
                       onChange={(e) =>
-                        updateDespesa(d.local_id, { import_despesa: parseFloat(e.target.value) || 0 })
+                        updateDespesa(d.local_id, { import_despesa: e.target.value })
                       }
                     />
                   </td>
@@ -357,7 +357,7 @@ function FinancesView({ planDraft, setPlanDraft, onGoToRuta, hasRoute, onSaveAll
                   min="0"
                   className="finances-price-input"
                   value={d.import_despesa}
-                  onChange={(e) => updateDespesa(d.local_id, { import_despesa: parseFloat(e.target.value) || 0 })}
+                  onChange={(e) => updateDespesa(d.local_id, { import_despesa: e.target.value })}
                 />
                 <span className="kind-pill kind-despesa" style={{ fontSize: '11px' }}>{d.divisa}</span>
               </div>

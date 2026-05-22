@@ -17,15 +17,15 @@ function AddItemModal({ kind, onClose, onAdd }) {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState(null);
-  const [quantitat, setQuantitat] = useState(1);
+  const [quantitat, setQuantitat] = useState('1');
   const [error, setError] = useState(null);
 
   const [newItem, setNewItem] = useState({
     nom: '',
     descripcio: '',
-    pes: 0,
-    preu: 0,
-    calories: 0,
+    pes: '',
+    preu: '',
+    calories: '',
     imatge_url: ''
   });
 
@@ -65,7 +65,7 @@ function AddItemModal({ kind, onClose, onAdd }) {
       preu: Number(selected.preu) || 0,
       calories: isMenjar ? Number(selected.calories) || 0 : 0,
       imatge_url: selected.imatge_url || '',
-      quantitat
+      quantitat: parseInt(quantitat) || 1
     });
   };
 
@@ -78,11 +78,11 @@ function AddItemModal({ kind, onClose, onAdd }) {
       ref_id: null,
       nom: newItem.nom,
       descripcio: newItem.descripcio || '',
-      pes: Number(newItem.pes) || 0,
-      preu: Number(newItem.preu) || 0,
-      calories: isMenjar ? Number(newItem.calories) || 0 : 0,
+      pes: parseFloat(newItem.pes) || 0,
+      preu: parseFloat(newItem.preu) || 0,
+      calories: isMenjar ? parseInt(newItem.calories) || 0 : 0,
       imatge_url: newItem.imatge_url || '',
-      quantitat
+      quantitat: parseInt(quantitat) || 1
     });
   };
 
@@ -198,7 +198,7 @@ function AddItemModal({ kind, onClose, onAdd }) {
                     type="number"
                     min="0"
                     value={newItem.pes}
-                    onChange={(e) => setNewItem({ ...newItem, pes: parseFloat(e.target.value) || 0 })}
+                    onChange={(e) => setNewItem({ ...newItem, pes: e.target.value })}
                   />
                 </div>
                 <div className="form-row">
@@ -208,7 +208,7 @@ function AddItemModal({ kind, onClose, onAdd }) {
                     step="0.01"
                     min="0"
                     value={newItem.preu}
-                    onChange={(e) => setNewItem({ ...newItem, preu: parseFloat(e.target.value) || 0 })}
+                    onChange={(e) => setNewItem({ ...newItem, preu: e.target.value })}
                   />
                 </div>
                 {isMenjar && (
@@ -218,7 +218,7 @@ function AddItemModal({ kind, onClose, onAdd }) {
                       type="number"
                       min="0"
                       value={newItem.calories}
-                      onChange={(e) => setNewItem({ ...newItem, calories: parseInt(e.target.value) || 0 })}
+                      onChange={(e) => setNewItem({ ...newItem, calories: e.target.value })}
                     />
                   </div>
                 )}
@@ -243,7 +243,7 @@ function AddItemModal({ kind, onClose, onAdd }) {
               type="number"
               min="1"
               value={quantitat}
-              onChange={(e) => setQuantitat(parseInt(e.target.value) || 1)}
+              onChange={(e) => setQuantitat(e.target.value)}
             />
           </div>
 
