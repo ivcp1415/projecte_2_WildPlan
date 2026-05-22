@@ -170,6 +170,7 @@ function FinancesView({ planDraft, setPlanDraft, onGoToRuta, hasRoute, onSaveAll
           )}
         </div>
 
+        {/* Desktop table */}
         <div className="excel-table-container">
           <table className="excel-table">
             <thead>
@@ -227,6 +228,36 @@ function FinancesView({ planDraft, setPlanDraft, onGoToRuta, hasRoute, onSaveAll
             )}
           </table>
         </div>
+
+        {/* Mobile card list — hidden on desktop via CSS */}
+        <div className="mobile-finances-list">
+          {itemCostRows.length === 0 ? (
+            <div style={{ padding: '24px 16px', textAlign: 'center', color: '#727973', fontSize: '14px' }}>
+              Cap item. Afegeix material des de la pestanya Logística.
+            </div>
+          ) : itemCostRows.map((r) => (
+            <div key={r.key} className="mobile-finances-row">
+              <span className={`kind-pill kind-${r.kind}`}>
+                <span className="material-symbols-outlined">
+                  {r.kind === 'menjar' ? 'restaurant' : 'inventory_2'}
+                </span>
+              </span>
+              <span className="mobile-finances-name">{r.nom}</span>
+              <div className="mobile-finances-price">
+                <input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  className="finances-price-input"
+                  value={r.preuUnitari}
+                  onChange={(e) => updateItemPrice(r.kind, r.local_id, e.target.value)}
+                />
+                <span style={{ color: '#727973', fontSize: '12px' }}>×{r.quantitat}</span>
+              </div>
+              <span className="mobile-finances-total">{r.import_despesa.toFixed(2)}€</span>
+            </div>
+          ))}
+        </div>
       </section>
 
       {/* === DESPESES MANUALS === */}
@@ -250,6 +281,7 @@ function FinancesView({ planDraft, setPlanDraft, onGoToRuta, hasRoute, onSaveAll
           </div>
         </div>
 
+        {/* Desktop table */}
         <div className="excel-table-container">
           <table className="excel-table">
             <thead>
@@ -307,6 +339,41 @@ function FinancesView({ planDraft, setPlanDraft, onGoToRuta, hasRoute, onSaveAll
               </tr>
             </tfoot>
           </table>
+        </div>
+
+        {/* Mobile card list — hidden on desktop via CSS */}
+        <div className="mobile-finances-list">
+          {planif.despeses.length === 0 ? (
+            <div style={{ padding: '24px 16px', textAlign: 'center', color: '#727973', fontSize: '14px' }}>
+              Cap despesa manual. Utilitza el botó de dalt per afegir-ne.
+            </div>
+          ) : planif.despeses.map((d) => (
+            <div key={d.local_id} className="mobile-finances-row">
+              <span className="mobile-finances-name">{d.concepte}</span>
+              <div className="mobile-finances-price">
+                <input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  className="finances-price-input"
+                  value={d.import_despesa}
+                  onChange={(e) => updateDespesa(d.local_id, { import_despesa: parseFloat(e.target.value) || 0 })}
+                />
+                <span className="kind-pill kind-despesa" style={{ fontSize: '11px' }}>{d.divisa}</span>
+              </div>
+              <button
+                className="cell-action-btn"
+                onClick={() => removeDespesa(d.local_id)}
+                title="Eliminar despesa"
+              >
+                <span className="material-symbols-outlined">delete</span>
+              </button>
+            </div>
+          ))}
+          <div className="mobile-finances-row" style={{ background: '#e7e8e9', fontWeight: 700 }}>
+            <span className="mobile-finances-name">Total general</span>
+            <span className="mobile-finances-total">{totalEstimat.toFixed(2)}€</span>
+          </div>
         </div>
       </section>
 

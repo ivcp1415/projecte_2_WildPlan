@@ -71,39 +71,128 @@
   font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
+/* === FOOTER UTIL BUTTONS (desktop) === */
+.sidebar-footer-actions {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 12px;
+  border-top: 1px solid #E8E6DF;
+}
+
+.sidebar-util-btn {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #888780;
+  transition: all 0.2s;
+  font-family: inherit;
+  width: 100%;
+}
+
+.sidebar-util-btn:hover {
+  background-color: #E8E6DF;
+  color: #3B6D11;
+}
+
+.sidebar-util-btn .material-symbols-outlined {
+  font-size: 22px;
+}
+
+/* Mobile utils hidden on desktop */
+.sidebar-mobile-utils {
+  display: none;
+}
+
 @media (max-width: 768px) {
   .planificar-sidebar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
     width: 100%;
-    height: auto;
+    height: 60px;
+    background-color: #ffffff;
+    border-top: 1px solid #E8E6DF;
     border-right: none;
-    border-bottom: 1px solid #E8E6DF;
-    padding: 16px;
+    border-bottom: none;
+    padding: 0;
     flex-direction: row;
-    gap: 8px;
-    overflow-x: auto;
+    gap: 0;
+    z-index: 200;
+    box-shadow: 0 -2px 12px rgba(44, 44, 42, 0.1);
+    overflow: visible;
   }
 
-  .sidebar-header {
+  .sidebar-header,
+  .sidebar-footer-actions {
     display: none;
   }
 
   .sidebar-nav {
     flex-direction: row;
-    gap: 4px;
+    gap: 0;
+    flex: 1;
+    height: 100%;
   }
 
   .sidebar-item {
+    flex: 1;
     flex-direction: column;
-    gap: 4px;
-    padding: 8px 12px;
-    font-size: 12px;
+    gap: 2px;
+    padding: 4px 2px 6px;
+    height: 100%;
+    border-radius: 0;
+    justify-content: center;
+    align-items: center;
+    color: #888780;
+    font-weight: 500;
+  }
+
+  .sidebar-item:hover {
+    background-color: transparent;
+    color: #3B6D11;
   }
 
   .sidebar-item .label {
-    display: none;
+    display: block;
+    font-size: 10px;
+    line-height: 1;
+    text-align: center;
   }
 
-  .sidebar-item.active .label {
-    display: inline;
+  .sidebar-item.active {
+    background-color: transparent;
+    color: #3B6D11;
+    font-weight: 600;
+  }
+
+  .sidebar-item.active .material-symbols-outlined {
+    color: #3B6D11;
+  }
+
+  .sidebar-item .material-symbols-outlined {
+    font-size: 22px;
+  }
+
+  /* Show Ajuda + Ajustos as icon tabs on the right of the bottom bar */
+  .sidebar-mobile-utils {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    border-left: 1px solid #E8E6DF;
+  }
+
+  .sidebar-mobile-utils .sidebar-item {
+    flex: 0 0 52px;
+    color: #888780;
   }
 }

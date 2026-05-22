@@ -1,7 +1,7 @@
 import React from 'react';
 import '../styles/PlanificarSidebar.css';
 
-function PlanificarSidebar({ activeTab, setActiveTab }) {
+function PlanificarSidebar({ activeTab, setActiveTab, setMostrarAjuda, setMostrarAjustos }) {
   const tabs = [
     { id: 'ruta',         label: 'Ruta',         icon: 'map' },
     { id: 'planificacio', label: 'Planificació', icon: 'event_note' },
@@ -29,6 +29,30 @@ function PlanificarSidebar({ activeTab, setActiveTab }) {
           </button>
         ))}
       </nav>
+
+      {/* Desktop footer — hidden on mobile (bottom nav handles it) */}
+      <div className="sidebar-footer-actions">
+        <button className="sidebar-util-btn" onClick={() => setMostrarAjuda(true)}>
+          <span className="material-symbols-outlined">help</span>
+          <span className="label">Ajuda</span>
+        </button>
+        <button className="sidebar-util-btn" onClick={() => setMostrarAjustos(true)}>
+          <span className="material-symbols-outlined">settings</span>
+          <span className="label">Ajustos</span>
+        </button>
+      </div>
+
+      {/* Mobile: icon-only buttons appended to bottom nav bar */}
+      <div className="sidebar-mobile-utils">
+        <button className="sidebar-item" onClick={() => setMostrarAjuda(true)} title="Ajuda">
+          <span className="material-symbols-outlined">help</span>
+          <span className="label">Ajuda</span>
+        </button>
+        <button className="sidebar-item" onClick={() => setMostrarAjustos(true)} title="Ajustos">
+          <span className="material-symbols-outlined">settings</span>
+          <span className="label">Ajustos</span>
+        </button>
+      </div>
     </aside>
   );
 }

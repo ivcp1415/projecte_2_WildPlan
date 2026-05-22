@@ -266,6 +266,7 @@ function LogisticaView({ planDraft, setPlanDraft, onGoToRuta, hasRoute, onSaveAl
           </div>
         </div>
 
+        {/* Desktop table */}
         <div className="excel-table-container">
           <table className="excel-table">
             <thead>
@@ -349,6 +350,57 @@ function LogisticaView({ planDraft, setPlanDraft, onGoToRuta, hasRoute, onSaveAl
               })}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile card list — hidden on desktop via CSS */}
+        <div className="mobile-items-list">
+          {rows.length === 0 ? (
+            <div style={{ padding: '24px 16px', textAlign: 'center', color: '#727973', fontSize: '14px' }}>
+              Cap element. Afegeix material o menjar amb els botons de dalt.
+            </div>
+          ) : rows.map((row) => {
+            const pesRow = (Number(row.pes) || 0) * (Number(row.quantitat) || 0);
+            return (
+              <div key={row.local_id} className="mobile-item-card">
+                <div className="mobile-item-row">
+                  <span className={`kind-pill kind-${row.kind}`}>
+                    <span className="material-symbols-outlined">
+                      {row.kind === 'menjar' ? 'restaurant' : 'inventory_2'}
+                    </span>
+                    {CATEGORY_LABELS[row.kind]}
+                  </span>
+                  <span className="mobile-item-name">
+                    {row.nom}
+                    {row._local && <span className="local-pill">nou</span>}
+                  </span>
+                  <button
+                    className="cell-action-btn"
+                    onClick={() => removeItem(row.kind, row.local_id)}
+                    title="Eliminar"
+                  >
+                    <span className="material-symbols-outlined">delete</span>
+                  </button>
+                </div>
+                <div className="mobile-item-meta">
+                  <span className="mobile-item-weight">{row.pes}g × u</span>
+                  <div className="qty-stepper">
+                    <button
+                      onClick={() => updateItemQuantity(row.kind, row.local_id, row.quantitat - 1)}
+                      disabled={row.quantitat <= 1}
+                    >−</button>
+                    <input
+                      type="number"
+                      min="1"
+                      value={row.quantitat}
+                      onChange={(e) => updateItemQuantity(row.kind, row.local_id, parseInt(e.target.value) || 1)}
+                    />
+                    <button onClick={() => updateItemQuantity(row.kind, row.local_id, row.quantitat + 1)}>+</button>
+                  </div>
+                  <span className="mobile-item-total">{pesRow}g</span>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </section>
 

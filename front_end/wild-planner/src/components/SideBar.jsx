@@ -12,8 +12,6 @@ export default function SideBar({
     handleReorderNodes,
     handleAfegirNodeMapa,
     setMapFocus,
-    setMostrarAjuda,
-    setMostrarAjustos,
     onSaveClick
 }) {
     const [draggedIndex, setDraggedIndex] = useState(null);
@@ -349,29 +347,6 @@ export default function SideBar({
                             <span className="material-symbols-outlined">save</span> Save Route
                         </button>
 
-                        <button
-                            onClick={() => setMostrarAjuda(true)}
-                            style={{
-                                display: 'flex', alignItems: 'center', gap: '8px',
-                                background: '#e8f5e9', border: 'none', padding: '12px',
-                                width: '100%', borderRadius: '8px', marginTop: '12px',
-                                cursor: 'pointer', color: '#1a3626', fontWeight: 'bold'
-                            }}
-                        >
-                            <span className="material-symbols-outlined">help</span> Ajuda
-                        </button>
-
-                        <button
-                            onClick={() => setMostrarAjustos(true)}
-                            style={{
-                                display: 'flex', alignItems: 'center', gap: '8px',
-                                background: '#e8f5e9', border: 'none', padding: '12px',
-                                width: '100%', borderRadius: '8px', marginTop: '12px',
-                                cursor: 'pointer', color: '#1a3626', fontWeight: 'bold'
-                            }}
-                        >
-                            <span className="material-symbols-outlined">settings</span> Ajustos
-                        </button>
                     </div>
                 </>
             )}
