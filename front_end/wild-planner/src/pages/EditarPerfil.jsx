@@ -7,9 +7,10 @@ import "../styles/editar-perfil.css";
 
 function EditarPerfil() {
 
-    const API_URL = process.env.REACT_APP_API_URL;
+    const API_URL = import.meta.env.VITE_APP_API_URL;
     // Cogemos el id del usuario del localStorage
     const usuariId = localStorage.getItem('userId');
+    const token = localStorage.getItem('token');
 
     //ESTADOS DE LOS CAMPOS DEL FORMULARIO
     //empiezan vacíos y se rellenan con los datos actuales del usuario
@@ -39,13 +40,17 @@ function EditarPerfil() {
     //Cuando la página se monta, cargamos los datos actuales del usuario
     //para rellenar el formulario con sus datos reales, no dejarlo vacío
     useEffect(() => {
-        if (!usuariId) {
+        if (!usuariId || !token) {
             // Si no hay id en el localStorage el usuario no está logueado
             navigate('/login');
             return;
         }
 
-        fetch(`${API_URL}/rutes/usuaris/${usuariId}/`)
+        fetch(`${API_URL}/planner/usuaris/${usuariId}/`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
             .then((res) => {
                 if (!res.ok) throw new Error('Usuari no trobat');
                 return res.json();
@@ -64,7 +69,7 @@ function EditarPerfil() {
                 setErrors(prev => ({ ...prev, general: err.message }));
                 setIsLoading(false);
             });
-    }, [usuariId]);
+    }, [usuariId, token, navigate, API_URL]);
 
     //FUNCIONES DE VALIDACIÓN
     //igual que en el Registre, cada campo se valida con onBlur
@@ -128,11 +133,14 @@ function EditarPerfil() {
         setIsSaving(true);
 
         try {
-            //PUT a /rutes/usuaris/<id>/ con los datos nuevos
+            // PUT a /planner/usuaris/<id>/editar/ con los datos nuevos
             //la url incluye el id del usuario para que Django sepa cuál actualizar
-            const response = await fetch(`${API_URL}/rutes/usuaris/${usuariId}/editar/`, {
+            const response = await fetch(`${API_URL}/planner/usuaris/${usuariId}/editar/`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
                 body: JSON.stringify({
                     username,
                     email,

@@ -1,0 +1,64 @@
+/* src/styles/Planificar.css */
+
+* {
+  box-sizing: border-box;
+}
+
+.planificar-container {
+  display: flex;
+  height: calc(100vh - 64px);
+  background-color: #F1EFE8;
+}
+
+.planificar-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 32px;
+  background-color: #F1EFE8;
+}
+
+.view-header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 32px;
+}
+
+.view-header h1 {
+  font-size: 32px;
+  font-weight: 700;
+  color: #2C2C2A;
+}
+
+.view-header p {
+  font-size: 16px;
+  color: #888780;
+}
+
+.status-msg {
+  text-align: center;
+  padding: 32px;
+  font-size: 15px;
+  color: #888780;
+}
+
+.error-msg {
+  text-align: center;
+  padding: 32px;
+  font-size: 15px;
+  color: #E24B4A;
+}
+
+@media (max-width: 768px) {
+  .planificar-container {
+    flex-direction: column;
+  }
+
+  .planificar-content {
+    padding: 24px 16px;
+  }
+
+  .view-header h1 {
+    font-size: 24px;
+  }
+}

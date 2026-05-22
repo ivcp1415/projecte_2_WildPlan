@@ -152,19 +152,47 @@
   }
 }
 
-/* ── BOTÓ ELIMINAR ──────────────────────── */
-.ruta-card-btn-delete {
+/* ── ACCIONS DE CARD (Editar / Eliminar) ── */
+.ruta-card-actions {
+    display: flex;
+    gap: 8px;
     margin-top: 10px;
-    width: 100%;
+}
+
+.ruta-card-btn-edit,
+.ruta-card-btn-delete {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
     padding: 8px;
     border-radius: 8px;
-    border: 1px solid #E24B4A;
     background: transparent;
-    color: #E24B4A;
     font-size: 13px;
     font-weight: 500;
     cursor: pointer;
     transition: background 0.15s, color 0.15s;
+}
+
+.ruta-card-btn-edit .material-symbols-outlined,
+.ruta-card-btn-delete .material-symbols-outlined {
+    font-size: 16px;
+}
+
+.ruta-card-btn-edit {
+    border: 1px solid #173124;
+    color: #173124;
+}
+
+.ruta-card-btn-edit:hover {
+    background: #173124;
+    color: white;
+}
+
+.ruta-card-btn-delete {
+    border: 1px solid #E24B4A;
+    color: #E24B4A;
 }
 
 .ruta-card-btn-delete:hover {

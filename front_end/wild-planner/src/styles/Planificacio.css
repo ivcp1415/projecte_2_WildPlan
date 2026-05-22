@@ -1,0 +1,202 @@
+/* src/styles/Planificacio.css */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.planificacio-container {
+  flex: 1;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 32px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  background-color: #F1EFE8;
+  min-height: calc(100vh - 64px);
+}
+
+/* ── HEADER ─────────────────────────────── */
+.planificacio-header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.planificacio-header h1 {
+  font-size: 32px;
+  font-weight: 700;
+  color: #2C2C2A;
+}
+
+.planificacio-header p {
+  font-size: 16px;
+  color: #888780;
+}
+
+/* ── GRID ───────────────────────────────── */
+.planificacio-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+/* ── CARD ───────────────────────────────── */
+.planificacio-card {
+  background-color: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #E8E6DF;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: 0 2px 8px rgba(44, 44, 42, 0.06);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.planificacio-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 16px rgba(44, 44, 42, 0.12);
+}
+
+.plan-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border-bottom: 1px solid #E8E6DF;
+  padding-bottom: 12px;
+}
+
+.plan-header h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #2C2C2A;
+}
+
+.plan-dates {
+  font-size: 12px;
+  color: #888780;
+}
+
+.plan-details {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.detail-item .label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #888780;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.detail-item .value {
+  font-size: 14px;
+  color: #2C2C2A;
+  font-weight: 500;
+}
+
+.pressupost-total {
+  color: #3B6D11;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.plan-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.btn-secondary {
+  flex: 1;
+  padding: 8px 16px;
+  background-color: #3B6D11;
+  color: #EAF3DE;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+  font-family: inherit;
+}
+
+.btn-secondary:hover {
+  background-color: #639922;
+}
+
+.btn-primary {
+  padding: 10px 24px;
+  background-color: #3B6D11;
+  color: #EAF3DE;
+  border: none;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+  font-family: inherit;
+}
+
+.btn-primary:hover {
+  background-color: #639922;
+}
+
+/* ── ESTADOS ────────────────────────────── */
+.status-msg {
+  text-align: center;
+  padding: 32px;
+  font-size: 15px;
+  color: #888780;
+}
+
+.error-msg {
+  text-align: center;
+  padding: 32px;
+  font-size: 15px;
+  color: #E24B4A;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 64px 32px;
+  background-color: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #E8E6DF;
+}
+
+.empty-state p {
+  font-size: 16px;
+  color: #888780;
+}
+
+/* ── RESPONSIVE ─────────────────────────── */
+@media (max-width: 768px) {
+  .planificacio-container {
+    padding: 24px 16px;
+  }
+
+  .planificacio-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .planificacio-header h1 {
+    font-size: 24px;
+  }
+}

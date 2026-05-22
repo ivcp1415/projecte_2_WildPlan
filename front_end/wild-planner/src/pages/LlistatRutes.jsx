@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar.jsx';
 import Footer from '../components/Footer.jsx';
 import FiltreRutes from '../components/FiltreRutes.jsx';
+import CreateCard from '../components/CreateCard.jsx';
 import '../styles/llistat.css';
 
 const LlistatRutes = () => {
@@ -26,7 +27,7 @@ const LlistatRutes = () => {
 
     useEffect(() => {
         setLoading(true);
-        fetch('http://127.0.0.1:8000/rutes/rutes/')
+        fetch(`${import.meta.env.VITE_APP_API_URL}/planner/rutes/`)
             .then((res) => {
                 if (!res.ok) throw new Error('Error carregant les rutes');
                 return res.json();
@@ -69,7 +70,7 @@ const LlistatRutes = () => {
 
     // Crida al endpoint DELETE del backend
     const handleEliminar = () => {
-        fetch(`http://127.0.0.1:8000/rutes/rutes/${rutaAEliminar.id}/eliminar/`, {
+        fetch(`${import.meta.env.VITE_APP_API_URL}/planner/rutes/${rutaAEliminar.id}/eliminar/`, {
             method: 'DELETE',
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
@@ -107,8 +108,8 @@ const LlistatRutes = () => {
                     {rutesFiltrades.map((ruta) => (
                         <div key={ruta.id} className="ruta-card" onClick={() => navigate(`/rutes/${ruta.id}`)}>
                             <div className="ruta-card-img">
-                                {ruta.url_imatges ? (
-                                    <img src={ruta.url_imatges} alt={ruta.nom} />
+                                {ruta.imatge_portada ? (
+                                    <img src={ruta.imatge_portada} alt={ruta.nom} />
                                 ) : (
                                     <div className="ruta-card-img-placeholder"><span>🏔</span></div>
                                 )}
@@ -138,6 +139,8 @@ const LlistatRutes = () => {
                         </div>
                     ))}
                 </div>
+
+                <CreateCard />
             </main>
             <Footer />
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar.jsx';
 import RutaHero from '../components/RutaHero.jsx';
 import RutaSpecs from '../components/RutaSpecs.jsx';
@@ -8,53 +8,119 @@ import PerfilElevacio from '../components/PerfilElevacio.jsx';
 import Comentaris from '../components/Comentaris.jsx';
 import Valoracions from '../components/Valoracions.jsx';
 import Footer from '../components/Footer.jsx';
+import ShareCard from '../components/ShareCard.jsx';
+import InventariMotxillaRuta from '../components/InventariMotxillaRuta.jsx';
 import '../styles/DetallRuta.css';
 
 const DetallRuta = () => {
 
-    //useParams coge el id de la URL: /rutes/5 → pk = "5"
+    // useParams gets the id from the URL: /rutes/5 → pk = "5"
     const { pk } = useParams();
-    //URL base del backend, definifa en .env
-    const API_URL = process.env.REACT_APP_API_URL;
+    const navigate = useNavigate();
+    
+    // Backend base URL, defined in .env
+    const API_URL = import.meta.env.VITE_APP_API_URL;
+    
+    // Auth & Role
+    const token = localStorage.getItem('token');
+    const userRole = localStorage.getItem('userRol'); // Recorda que vas fer servir 'userRol'
 
-    //estados para guardar los datos que llegan del backend
-    const [ruta, setRuta] = useState(null); //guarda el objero ruta ppal
+    const [ruta,       setRuta]       = useState(null);
     const [comentaris, setComentaris] = useState([]);
     const [valoracions, setValoracions] = useState([]);
+    const [isLoading,  setIsLoading]  = useState(true);
+    const [error,      setError]      = useState('');
+    
+    // State to toggle the share card visibility
+    const [showShareCard, setShowShareCard] = useState(false);
+    
+    // State for Modal Admin Validation
+    const [showVerifyModal, setShowVerifyModal] = useState(false);
+    const [isVerifying, setIsVerifying] = useState(false);
 
-    //estados auxiliares
-    const [isLoading, setIsLoading] = useState(true); //controla si se cargan los datos (true porque cuando se abre la página estan cargados)
-    const [error, setError] = useState('');
+    // State for cloning the route
+    const [isCloning, setIsCloning] = useState(false);
 
-    //useEffect es el hook que se usa para hacer llamadas a la API.
-    //dentro va el código que se ejecuta después de renderizar (o cuando cambia pk).
-    //La primera parte () => { ... } es la función que se quiere ejecutar. La segunda parte [pk] se vuelve a ejecutar cuando cambia
-    // DetallRuta.jsx optimitzat
-    console.log("hello")
+    const fetchDades = async () => {
+        try {
+            const res = await fetch(`${API_URL}/planner/rutes/${pk}/`);
+            if (!res.ok) throw new Error("No s'ha pogut carregar la ruta.");
+            const data = await res.json();
+            setRuta(data.ruta);
+            setComentaris(data.comentaris || []);
+            setValoracions(data.valoracions || []);
+        } catch (err) {
+            setError(err.message || "Error de connexió");
+        }
+    };
+
     useEffect(() => {
-        const fetchDades = async () => {
-            setIsLoading(true);
-            try {
-                const res = await fetch(`${API_URL}/rutes/rutes/${pk}/`);
-                if (!res.ok) throw new Error("No s'ha pogut carregar la ruta.");
-
-                const data = await res.json();
-                console.log(data)
-                // 1. CORRECCIÓ: Guardem tots els estats que envia el backend
-                setRuta(data.ruta);
-                setComentaris(data.comentaris || []);
-                setValoracions(data.valoracions || []);
-
-            } catch (err) {
-                setError(err.message || "Error de connexió");
-            } finally {
-                setIsLoading(false);
-            }
-        };
-        fetchDades();
+        setIsLoading(true);
+        fetchDades().finally(() => setIsLoading(false));
     }, [pk, API_URL]);
-    //RENDERIZADO
-    //mientras carga mostramos un mensaje
+
+    // Funció per clonar la ruta: carrega les dades al editor per desar-la com a pròpia
+    const handleCloneRoute = async () => {
+        if (!token) {
+            if (confirm("Cal iniciar sessió per a clonar una ruta. Vols anar a la pantalla d'inici de sessió?")) {
+                navigate('/login');
+            }
+            return;
+        }
+
+        setIsCloning(true);
+        try {
+            const res = await fetch(`${API_URL}/planner/rutes/${pk}/editar-dades/`);
+            if (!res.ok) throw new Error("No s'ha pogut carregar la ruta.");
+            const data = await res.json();
+
+            localStorage.setItem('ruta_esborrany_nom', `${data.nom} (còpia)`);
+            localStorage.setItem('ruta_esborrany_nodes', JSON.stringify(data.nodes));
+            localStorage.setItem('ruta_esborrany_trams', JSON.stringify(data.trams));
+            localStorage.removeItem('ruta_editant_id');
+            localStorage.removeItem('ruta_editant_meta');
+            localStorage.removeItem('plan_esborrany');
+
+            navigate('/planificar');
+        } catch (err) {
+            alert("Error carregant la ruta per a clonar.");
+        } finally {
+            setIsCloning(false);
+        }
+    };
+
+    // Funció per verificar/desverificar la ruta
+    const handleVerifyRoute = async () => {
+        setIsVerifying(true);
+        try {
+            const res = await fetch(`${API_URL}/planner/rutes/${pk}/verificar/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                // Actualitzem l'estat local perquè es vegi el canvi immediatament
+                setRuta({ ...ruta, es_verificada: data.es_verificada });
+                setShowVerifyModal(false);
+            } else {
+                alert(`Error: ${data.error || 'No s\'ha pogut verificar la ruta.'}`);
+            }
+        } catch (error) {
+            alert('Error de connexió al intentar verificar.');
+        } finally {
+            setIsVerifying(false);
+        }
+    };
+
+
+    // --- RENDER ---
+    
+    // Show loading state
     if (isLoading) {
         return (
             <>
@@ -67,7 +133,7 @@ const DetallRuta = () => {
         );
     }
 
-    //si hay error lo mostramos
+    // Show error state
     if (error) {
         return (
             <>
@@ -83,45 +149,136 @@ const DetallRuta = () => {
     return (
         <div className="detall-page">
 
-            {/* Navbar */}
             <Navbar />
 
-            {/* Hero: los datos básicos de la ruta (img, nombre, modalidad, etc)*/}
+            {/* AFEGIT: Mostrem una barra d'administrador si l'usuari és admin */}
+            {userRole === 'admin' && (
+                <div className="admin-toolbar" style={{ backgroundColor: '#fff3cd', padding: '10px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #ffeeba' }}>
+                    <span style={{ fontWeight: 'bold', color: '#856404' }}>🔧 Panell d'Administrador</span>
+                    <button 
+                        onClick={() => setShowVerifyModal(true)}
+                        style={{ 
+                            backgroundColor: ruta?.es_verificada ? '#dc3545' : '#28a745', 
+                            color: 'white', 
+                            border: 'none', 
+                            padding: '8px 16px', 
+                            borderRadius: '4px', 
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '5px'
+                        }}
+                    >
+                        <span className="material-symbols-outlined">
+                            {ruta?.es_verificada ? 'cancel' : 'verified'}
+                        </span>
+                        {ruta?.es_verificada ? 'Treure Verificació' : 'Verificar Ruta'}
+                    </button>
+                </div>
+            )}
+
+            {/* AFEGIT: Modal de Confirmació per l'Admin */}
+            {showVerifyModal && (
+                <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 9999 }}>
+                    <div style={{ backgroundColor: 'white', padding: '2rem', borderRadius: '8px', maxWidth: '400px', width: '90%', textAlign: 'center' }}>
+                        <h3>{ruta?.es_verificada ? 'Treure verificació?' : 'Verificar aquesta ruta?'}</h3>
+                        <p style={{ margin: '1rem 0' }}>
+                            {ruta?.es_verificada 
+                                ? "Si confirmes, aquesta ruta perdrà l'etiqueta de qualitat verificada per l'equip." 
+                                : "En verificar aquesta ruta, atestes que les dades són correctes, segures i de qualitat per als usuaris."}
+                        </p>
+                        <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginTop: '1.5rem' }}>
+                            <button 
+                                onClick={() => setShowVerifyModal(false)}
+                                style={{ padding: '8px 16px', borderRadius: '4px', border: '1px solid #ccc', background: 'white', cursor: 'pointer' }}
+                                disabled={isVerifying}
+                            >
+                                Cancel·lar
+                            </button>
+                            <button 
+                                onClick={handleVerifyRoute}
+                                style={{ padding: '8px 16px', borderRadius: '4px', border: 'none', background: '#007bff', color: 'white', cursor: 'pointer' }}
+                                disabled={isVerifying}
+                            >
+                                {isVerifying ? 'Processant...' : 'Confirmar'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Hero: Aquí hauries de passar l'estat de verificació. Si el component RutaHero no el mostra, caldrà modificar RutaHero.jsx també. */}
             <RutaHero ruta={ruta} />
 
-            {/* Contenido principal: columna izquierda + columna derecha */}
+            {/* Rest of main content */}
             <main className="detall-main">
-
-                {/* COLUMNA IZQUIERDA */}
+                {/* LEFT COLUMN */}
                 <div className="detall-col-left">
-
-                    {/* Specs: distancia, desnivell, modalitat */}
-                    {/* Le pasamos la ruta entera, el coge lo que necesita */}
+                    {/* AFEGIM UNA ETIQUETA VISUAL AL COSTAT DE LES SPECS */}
+                    {ruta?.es_verificada && (
+                        <div style={{ display: 'inline-flex', alignItems: 'center', backgroundColor: '#e6f4ea', color: '#137333', padding: '5px 12px', borderRadius: '16px', marginBottom: '1rem', fontWeight: 'bold', fontSize: '0.9rem' }}>
+                            <span className="material-symbols-outlined" style={{ fontSize: '1.2rem', marginRight: '5px' }}>verified</span>
+                            Ruta Verificada Oficialment
+                        </div>
+                    )}
                     <RutaSpecs ruta={ruta} />
-
-                    {/* 1. Mapa: enviem el camp JSON 'track_geojson' */}
                     <RutaMapa geoData={ruta.track_complet} />
-
-                    {/* 2. Perfil: enviem el camp JSON 'perfil_elevacio' */}
                     <PerfilElevacio perfilData={ruta.perfil_elevacio} />
+                    <InventariMotxillaRuta rutaId={Number(pk)} />
                 </div>
 
-                {/* COLUMNA DERECHA */}
-                <div className="detall-col-right">
+                {/* RIGHT COLUMN */}
+                <div className="detall-col-right" style={{ position: 'relative' }}>
+                    <div className="share-toolbar" style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginBottom: '1rem' }}>
+                        <button
+                            className="btn-clone-route"
+                            onClick={handleCloneRoute}
+                            disabled={isCloning}
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.5rem',
+                                padding: '0.5rem 1rem',
+                                cursor: isCloning ? 'wait' : 'pointer',
+                                borderRadius: '8px',
+                                background: '#173124',
+                                color: '#ffffff',
+                                border: 'none',
+                                fontWeight: 600
+                            }}
+                            title="Copia aquesta ruta a les teves rutes per a poder editar-la"
+                        >
+                            <span className="material-symbols-outlined">content_copy</span>
+                            {isCloning ? 'Clonant…' : 'Clonar a Les meves rutes'}
+                        </button>
+                        <button
+                            className="btn-share-toggle"
+                            onClick={() => setShowShareCard(!showShareCard)}
+                            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1rem', cursor: 'pointer', borderRadius: '8px' }}
+                        >
+                            <span className="material-symbols-outlined">share</span>
+                            Compartir
+                        </button>
+                    </div>
 
-                    {/* Valoraciones: rating y likes/dislikes */}
-                    <Valoracions valoracions={valoracions} />
+                    {showShareCard && (
+                        <ShareCard 
+                            ruta={ruta} 
+                            onClose={() => setShowShareCard(false)} 
+                        />
+                    )}
 
-                    {/* Comentarios de la comunidad */}
-                    <Comentaris comentaris={comentaris} />
-
+                    <div className="social-panel">
+                        <Valoracions valoracions={valoracions} />
+                        <Comentaris
+                            comentaris={comentaris}
+                            rutaId={Number(pk)}
+                            onNouComentari={fetchDades}
+                        />
+                    </div>
                 </div>
-
             </main>
-
-            {/* Footer */}
             <Footer />
-
         </div>
     );
 };

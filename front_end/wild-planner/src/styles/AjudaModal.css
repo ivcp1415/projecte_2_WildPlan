@@ -199,3 +199,28 @@
     font-size: 0.95rem;
     line-height: 1.5;
 }
+
+@media (max-width: 768px) {
+    .ajuda-modal {
+        padding: 20px 16px;
+        max-height: 95vh;
+    }
+    .ajuda-header h2 {
+        font-size: 1.5rem;
+    }
+    .ajuda-grid-top {
+        grid-template-columns: 1fr;
+    }
+    .legend-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .legend-grid {
+        grid-template-columns: 1fr;
+    }
+    .ajuda-modal {
+        padding: 16px 12px;
+    }
+}

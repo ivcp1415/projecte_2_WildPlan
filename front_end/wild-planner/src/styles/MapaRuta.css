@@ -45,7 +45,31 @@
     height: 220px;
     width: 100%;
     box-sizing: border-box;
-    border-top: 1px solid #f1f3f4; /* Línia separadora entre stats i gràfic */
+    border-top: 1px solid #f1f3f4;
     margin-top: 4px;
     padding-top: 16px;
+}
+
+@media (max-width: 768px) {
+    .komoot-panel {
+        bottom: 12px;
+        width: calc(100% - 24px);
+        left: 12px;
+        right: 12px;
+        transform: none;
+    }
+
+    .komoot-stats-header {
+        padding: 10px 16px;
+        overflow-x: auto;
+    }
+
+    .stats-group {
+        gap: 16px;
+    }
+
+    .komoot-chart-area {
+        height: 160px;
+        padding: 12px 16px 16px;
+    }
 }

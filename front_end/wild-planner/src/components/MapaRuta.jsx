@@ -17,8 +17,14 @@ import '../styles/MapaRuta.css';
 // ==========================================
 // CONTROLADOR DE CÀMERA (Independent)
 // ==========================================
-function MapController({ mapFocus }) {
+function MapController({ mapFocus, initialBounds }) {
     const map = useMap();
+
+    useEffect(() => {
+        if (initialBounds) {
+            map.fitBounds(initialBounds, { padding: [50, 50], animate: false });
+        }
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
         if (mapFocus && mapFocus.lat && mapFocus.lng) {
@@ -68,7 +74,8 @@ export default function MapaRuta({
     setMostrarPerfil,
     altContrast,
     indicadorPendent,
-    getTextSteepnessORS
+    getTextSteepnessORS,
+    initialBounds
 }) {
     return (
         <main className="map-area" style={{ position: 'relative' }}>
@@ -77,7 +84,7 @@ export default function MapaRuta({
                 zoom={14}
                 style={{ height: '100%', width: '100%', zIndex: 1 }}
             >
-                <MapController mapFocus={mapFocus} />
+                <MapController mapFocus={mapFocus} initialBounds={initialBounds} />
                 <ClickHandler carregantORS={carregantORS} handleAfegirNodeMapa={handleAfegirNodeMapa} />
 
                 <LayersControl position="topright">

@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import '../styles/SaveRouteModal.css'; // Make sure the path matches your structure
 
-export default function SaveRouteModal({ onClose, onSave, stats, defaultName, urlImatge, setUrlImatge }) {
+export default function SaveRouteModal({ onClose, onSave, stats, defaultName, defaultDescription, defaultModality, urlImatge, setUrlImatge }) {
     const [name, setName] = useState(defaultName);
-    const [description, setDescription] = useState('');
-    const [modality, setModality] = useState('senderisme');
+    const [description, setDescription] = useState(defaultDescription || '');
+    const [modality, setModality] = useState(defaultModality || 'senderisme');
 
     const handleSubmit = (e) => {
         e.preventDefault();

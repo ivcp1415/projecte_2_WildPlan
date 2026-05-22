@@ -1,0 +1,260 @@
+/* src/styles/InventariMotxillaRuta.css */
+
+.inv-ruta-card {
+  background-color: #ffffff;
+  border: 1px solid #e1e3e4;
+  border-radius: 14px;
+  padding: 24px;
+  margin-bottom: 24px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.inv-ruta-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #eef0ee;
+  margin-bottom: 18px;
+}
+
+.inv-ruta-head-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.inv-ruta-head-title h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #173124;
+}
+
+.inv-ruta-head-title .material-symbols-outlined {
+  font-size: 24px;
+  color: #173124;
+}
+
+.inv-ruta-select {
+  height: 38px;
+  padding: 0 32px 0 12px;
+  border: 1px solid #c2c8c2;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  color: #173124;
+  background-color: #ffffff;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%227%22%20viewBox%3D%220%200%2012%207%22%3E%3Cpath%20stroke%3D%22%23173124%22%20stroke-width%3D%221.5%22%20fill%3D%22none%22%20d%3D%22M1%201l5%205%205-5%22%2F%3E%3C%2Fsvg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+}
+
+.inv-ruta-select:focus {
+  outline: none;
+  border-color: #173124;
+  box-shadow: 0 0 0 3px rgba(23, 49, 36, 0.1);
+}
+
+/* === EMPTY / CTA === */
+.inv-ruta-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 16px;
+  text-align: center;
+  color: #5f6963;
+  gap: 12px;
+}
+
+.inv-ruta-empty p {
+  margin: 0;
+  font-size: 14px;
+}
+
+.inv-ruta-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 38px;
+  padding: 0 16px;
+  background-color: #173124;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.inv-ruta-cta:hover {
+  background-color: #2d4739;
+}
+
+.inv-ruta-cta .material-symbols-outlined {
+  font-size: 18px;
+}
+
+/* === META ROW === */
+.inv-ruta-meta {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.inv-meta-item {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 12px;
+  background-color: #f8faf9;
+  border-radius: 8px;
+}
+
+.inv-meta-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #5f6963;
+}
+
+.inv-meta-value {
+  margin-top: 2px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #173124;
+}
+
+/* === STATS GRID === */
+.inv-ruta-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+.inv-stat {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background-color: #ccead6;
+  border-radius: 10px;
+}
+
+.inv-stat .material-symbols-outlined {
+  font-size: 28px;
+  color: #173124;
+}
+
+.inv-stat strong {
+  display: block;
+  font-size: 16px;
+  font-weight: 700;
+  color: #173124;
+}
+
+.inv-stat small {
+  display: block;
+  font-size: 11px;
+  color: #424844;
+  margin-top: 2px;
+}
+
+/* === SECTION TITLES === */
+.inv-ruta-section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #173124;
+  margin: 18px 0 10px 0;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #eef0ee;
+}
+
+.inv-ruta-section-title .material-symbols-outlined {
+  font-size: 18px;
+  color: #944925;
+}
+
+.inv-ruta-emptyrow {
+  padding: 12px;
+  font-size: 13px;
+  color: #5f6963;
+  font-style: italic;
+  text-align: center;
+  background-color: #fafbfa;
+  border-radius: 6px;
+}
+
+/* === TABLES === */
+.inv-ruta-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.inv-ruta-table thead th {
+  text-align: left;
+  padding: 8px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #5f6963;
+  background-color: #f8faf9;
+  border-bottom: 1px solid #eef0ee;
+}
+
+.inv-ruta-table tbody td {
+  padding: 10px;
+  border-bottom: 1px solid #f1f3f1;
+  color: #2c2c2a;
+}
+
+.inv-ruta-table tbody tr:hover {
+  background-color: #fafbfa;
+}
+
+.inv-ruta-table .num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.inv-total-row td {
+  padding: 10px;
+  font-weight: 700;
+  color: #173124;
+  background-color: #f8faf9;
+  border-top: 2px solid #173124;
+}
+
+@media (max-width: 700px) {
+  .inv-ruta-meta {
+    grid-template-columns: 1fr;
+  }
+  .inv-ruta-stats {
+    grid-template-columns: 1fr;
+  }
+  .inv-ruta-card {
+    padding: 16px;
+  }
+  .inv-ruta-table {
+    font-size: 12px;
+  }
+  .inv-ruta-table thead th,
+  .inv-ruta-table tbody td {
+    padding: 8px 6px;
+  }
+}

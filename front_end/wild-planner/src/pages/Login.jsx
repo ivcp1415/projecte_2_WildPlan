@@ -16,10 +16,9 @@ const Login = () => {
         if (pattern.test(val)) {
             setErrors(prev => ({ ...prev, username: '' }));
             return true;
-        } else {
-            setErrors(prev => ({ ...prev, username: "Mínim 3 caràcters. Només lletres, números, _ o ." }));
-            return false;
         }
+        setErrors(prev => ({ ...prev, username: "Mínim 3 caràcters. Només lletres, números, _ o ." }));
+        return false;
     };
 
     const validatePassword = (val) => {
@@ -27,10 +26,9 @@ const Login = () => {
         if (pattern.test(val)) {
             setErrors(prev => ({ ...prev, password: '' }));
             return true;
-        } else {
-            setErrors(prev => ({ ...prev, password: "La contrasenya ha de ser més robusta (8-16 caràcters, majúscula, número i símbol)." }));
-            return false;
         }
+        setErrors(prev => ({ ...prev, password: "La contrasenya ha de ser més robusta (8-16 caràcters, majúscula, número i símbol)." }));
+        return false;
     };
 
     const handleSubmit = async (e) => {
@@ -42,7 +40,7 @@ const Login = () => {
         setIsLoading(true);
 
         try {
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/rutes/login/`, {
+            const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/planner/login/`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, password }),
@@ -54,7 +52,18 @@ const Login = () => {
                 throw new Error(data.error || 'Credencials incorrectes.');
             }
 
-            // Guardem totes les dades de l'usuari al localStorage
+            // If a different user was previously logged in, their draft state must be wiped
+            // to prevent PUT requests targeting routes that belong to someone else.
+            const previousUserId = localStorage.getItem('userId');
+            if (previousUserId && previousUserId !== String(data.user_id)) {
+                const draftKeys = [
+                    'ruta_esborrany_nom', 'ruta_esborrany_nodes', 'ruta_esborrany_trams',
+                    'plan_esborrany', 'ruta_editant_id', 'ruta_editant_meta',
+                    'ruta_editant_planificacio_id', 'ruta_editant_motxilla_id', 'ruta_editant_tab',
+                ];
+                draftKeys.forEach(k => localStorage.removeItem(k));
+            }
+
             localStorage.setItem('token', data.token);
             localStorage.setItem('accessToken', data.token);
             localStorage.setItem('userId', data.user_id);
@@ -78,50 +87,94 @@ const Login = () => {
 
     return (
         <div className="login-page">
-            <main className="login-card">
-                <h1>Accés al Projecte</h1>
+            <div className="bg-image"></div>
+            <div className="bg-overlay"></div>
 
-                {errors.general && <p className="error-box">{errors.general}</p>}
+            <div className="login-card-container">
+                <main className="login-card">
 
-                <form onSubmit={handleSubmit} noValidate>
-                    <div className="form-group">
-                        <label htmlFor="username">Nom d'usuari</label>
-                        <input
-                            type="text"
-                            id="username"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
-                            onBlur={() => validateUsername(username)}
-                            disabled={isLoading}
-                        />
-                        {errors.username && <span className="error-msg">{errors.username}</span>}
+                    {/* Logo */}
+                    <div className="login-header">
+                        <div className="login-logo-group">
+                            <span className="material-symbols-outlined login-logo-icon">landscape</span>
+                            <span className="login-logo-title">Sendera</span>
+                        </div>
+                        <p className="login-subtitle">Precisió en cada cim. Accedeix al teu portal logístic.</p>
                     </div>
 
-                    <div className="form-group">
-                        <label htmlFor="password">Contrasenya</label>
-                        <input
-                            type={showPassword ? "text" : "password"}
-                            id="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            onBlur={() => validatePassword(password)}
-                            disabled={isLoading}
-                        />
-                        <button type="button" onClick={() => setShowPassword(!showPassword)}>
-                            {showPassword ? "Amagar" : "Mostrar"}
+                    {errors.general && <p className="error-box">{errors.general}</p>}
+
+                    <form onSubmit={handleSubmit} noValidate>
+
+                        {/* USERNAME */}
+                        <div className="form-group">
+                            <label className="form-label" htmlFor="username">Nom d'usuari</label>
+                            <div className="input-container">
+                                <span className="material-symbols-outlined input-icon-left">person</span>
+                                <input
+                                    className={`form-input ${errors.username ? 'input-error' : ''}`}
+                                    type="text"
+                                    id="username"
+                                    placeholder="nom_usuari"
+                                    value={username}
+                                    onChange={(e) => setUsername(e.target.value)}
+                                    onBlur={() => validateUsername(username)}
+                                    disabled={isLoading}
+                                />
+                            </div>
+                            {errors.username && <span className="error-message">{errors.username}</span>}
+                        </div>
+
+                        {/* PASSWORD */}
+                        <div className="form-group">
+                            <label className="form-label" htmlFor="password">Contrasenya</label>
+                            <div className="input-container">
+                                <span className="material-symbols-outlined input-icon-left">lock</span>
+                                <input
+                                    className={`form-input has-right-icon ${errors.password ? 'input-error' : ''}`}
+                                    type={showPassword ? "text" : "password"}
+                                    id="password"
+                                    placeholder="••••••••"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    onBlur={() => validatePassword(password)}
+                                    disabled={isLoading}
+                                />
+                                <button className="btn-icon-right" type="button" onClick={() => setShowPassword(!showPassword)}>
+                                    <span className="material-symbols-outlined">
+                                        {showPassword ? "visibility" : "visibility_off"}
+                                    </span>
+                                </button>
+                            </div>
+                            {errors.password && <span className="error-message">{errors.password}</span>}
+                        </div>
+
+                        <button type="submit" className="btn-submit" disabled={isLoading}>
+                            {isLoading ? 'Connectant...' : 'Accedir'}
                         </button>
-                        {errors.password && <span className="error-msg">{errors.password}</span>}
+
+                    </form>
+
+                    {/* Divider */}
+                    <div className="login-divider">
+                        <div className="login-divider-line"></div>
+                        <span className="login-divider-text">o continua com a</span>
+                        <div className="login-divider-line"></div>
                     </div>
 
-                    <button type="submit" className="btn-primary" disabled={isLoading}>
-                        {isLoading ? 'Connectant...' : 'Iniciar Sessió'}
+                    {/* Guest access */}
+                    <button onClick={handleGuestLogin} className="btn-social">
+                        <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>person_outline</span>
+                        Entrar com a Convidat
                     </button>
-                </form>
 
-                <button onClick={handleGuestLogin} className="btn-secondary">
-                    Entrar com a Convidat
-                </button>
-            </main>
+                    {/* Register link */}
+                    <div className="login-footer">
+                        <p>Encara no tens compte? <a className="register-link" href="/registre">Registra't</a></p>
+                    </div>
+
+                </main>
+            </div>
         </div>
     );
 };

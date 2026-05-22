@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 // Hem afegit LayersControl i ScaleControl a les importacions
 import { MapContainer, TileLayer, Marker, Polyline, Tooltip, useMapEvents, LayersControl, ScaleControl } from 'react-leaflet';
 import L from 'leaflet';
@@ -12,6 +13,12 @@ import AjudaModal from '../components/AjudaModal.jsx'
 import AjustosModal from '../components/AjustosModal.jsx'
 import SaveRouteModal from '../components/SaveRouteModal.jsx';
 import SuccessRouteModal from '../components/SuccessRouteModal.jsx';
+import PlanificarSidebar from '../components/PlanificarSidebar.jsx';
+import LogisticaView from '../components/LogisticaView.jsx';
+import FinancesView from '../components/FinancesView.jsx';
+import ClimaView from '../components/ClimaView.jsx';
+import AlertesView from '../components/AlertesView.jsx';
+import AssistentIA from '../components/AssistentIA.jsx';
 
 // Funció per traduir el pendent a text humà
 const getTextSteepnessORS = (level) => {
@@ -43,6 +50,24 @@ const crearIconaNode = (lletra, color) => L.divIcon({
 const getLletra = (index) => String.fromCharCode(65 + index);
 
 export default function Rutes() {
+    const API_URL = import.meta.env.VITE_APP_API_URL;
+    const navigate = useNavigate();
+
+    const [editantRutaId] = useState(() => localStorage.getItem('ruta_editant_id') || null);
+    const [editantMeta] = useState(() => {
+        const saved = localStorage.getItem('ruta_editant_meta');
+        if (saved) try { return JSON.parse(saved); } catch {}
+        return null;
+    });
+    const [editantPlanificacioId] = useState(() => {
+        const id = localStorage.getItem('ruta_editant_planificacio_id');
+        return id ? parseInt(id) : null;
+    });
+    const [editantMotxillaId, setEditantMotxillaId] = useState(() => {
+        const id = localStorage.getItem('ruta_editant_motxilla_id');
+        return id ? parseInt(id) : null;
+    });
+
     const [nomRuta, setNomRuta] = useState(() => {
         return localStorage.getItem('ruta_esborrany_nom') || 'La meva nova ruta';
     });
@@ -56,8 +81,21 @@ export default function Rutes() {
         const savedTrams = localStorage.getItem('ruta_esborrany_trams');
         return savedTrams ? JSON.parse(savedTrams) : [];
     });
+
+    const [initialBounds] = useState(() => {
+        try {
+            const savedNodes = JSON.parse(localStorage.getItem('ruta_esborrany_nodes') || '[]');
+            if (savedNodes.length === 0) return null;
+            const lats = savedNodes.map(n => parseFloat(n.latitud));
+            const lngs = savedNodes.map(n => parseFloat(n.longitud));
+            if (savedNodes.length === 1) {
+                return [[lats[0] - 0.02, lngs[0] - 0.02], [lats[0] + 0.02, lngs[0] + 0.02]];
+            }
+            return [[Math.min(...lats), Math.min(...lngs)], [Math.max(...lats), Math.max(...lngs)]];
+        } catch { return null; }
+    });
     const [carregantORS, setCarregantORS] = useState(false);
-    const [urlImatge, setUrlImatge] = useState('');
+    const [urlImatge, setUrlImatge] = useState(() => editantMeta?.imatge_portada || '');
     const [mapFocus, setMapFocus] = useState(null);
     const [mostrarPerfil, setMostrarPerfil] = useState(false);
     const [mostrarAjuda, setMostrarAjuda] = useState(false);
@@ -71,12 +109,70 @@ export default function Rutes() {
 
     const [mostrarExitModal, setMostrarExitModal] = useState(false);
     const [dadesExportacio, setDadesExportacio] = useState(null); // Stores the GPX string
+    const [activeTab, setActiveTab] = useState(() => {
+        const tab = localStorage.getItem('ruta_editant_tab');
+        if (tab) { localStorage.removeItem('ruta_editant_tab'); return tab; }
+        return 'ruta';
+    });
+
+    // === ESBORRANY DE PLANIFICACIÓ (motxilla + planificacio + despeses) ===
+    // Tot es manté com a esborrany local fins que es desa la ruta. La commit del
+    // pla complet es fa en una sola tirada dins de processarIEnviarRuta.
+    const [planDraft, setPlanDraft] = useState(() => {
+        const saved = localStorage.getItem('plan_esborrany');
+        if (saved) {
+            try { return JSON.parse(saved); } catch { /* fallthrough */ }
+        }
+        return {
+            motxilla: {
+                nom: 'Motxilla principal',
+                pes_base: 0,
+                materials: [],
+                menjars: []
+            },
+            planificacio: {
+                titol: '',
+                data_inici: '',
+                data_fi: '',
+                despeses: []
+            }
+        };
+    });
 
     useEffect(() => {
         localStorage.setItem('ruta_esborrany_nom', nomRuta);
         localStorage.setItem('ruta_esborrany_nodes', JSON.stringify(nodes));
         localStorage.setItem('ruta_esborrany_trams', JSON.stringify(trams));
     }, [nomRuta, nodes, trams]);
+
+    useEffect(() => {
+        localStorage.setItem('plan_esborrany', JSON.stringify(planDraft));
+    }, [planDraft]);
+
+    // Auto-recalculate segments when nodes were loaded from DB (fork/edit) but have no geometry
+    useEffect(() => {
+        const initialNodes = nodes;
+        const initialTrams = trams;
+        if (initialNodes.length >= 2 && initialTrams.length === 0) {
+            const recalcular = async () => {
+                setCarregantORS(true);
+                const nousTrams = [];
+                for (let i = 0; i < initialNodes.length - 1; i++) {
+                    const dadesTram = await calcularTramORS(initialNodes[i], initialNodes[i + 1]);
+                    if (dadesTram) {
+                        nousTrams.push({
+                            origen_ordre: initialNodes[i].ordre,
+                            desti_ordre: initialNodes[i + 1].ordre,
+                            ...dadesTram
+                        });
+                    }
+                }
+                setTrams(nousTrams);
+                setCarregantORS(false);
+            };
+            recalcular();
+        }
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     // 3. ADD THIS HELPER FUNCTION (put it right before your `return` statement)
     const getDadesElevacio = () => {
@@ -136,6 +232,7 @@ export default function Rutes() {
     const processarIEnviarRuta = async (dadesFormulari) => {
         // 1. Generate the unified GeoJSON line for track_complet
         const totesLesCoordenades = trams.reduce((acc, tram) => {
+            if (!tram.geometria_segment) return acc;
             return acc.concat(tram.geometria_segment.coordinates);
         }, []);
 
@@ -155,7 +252,7 @@ export default function Rutes() {
             nom: dadesFormulari.nom,
             descripcio: dadesFormulari.descripcio,
             modalitat: dadesFormulari.modalitat,
-            url_imatges: urlImatge || null,
+            imatge_portada: urlImatge || null,
             distancia: parseFloat(stats.distancia.toFixed(2)),
             desnivell_positiu: stats.desnivell_positiu,
             desnivell_negatiu: stats.desnivell_negatiu,
@@ -173,12 +270,13 @@ export default function Rutes() {
             })),
 
             // Individual Segments (Tram)
-            trams: trams.map(t => ({
+            trams: trams.filter(t => t.geometria_segment).map(t => ({
                 origen_ordre: t.origen_ordre,
                 desti_ordre: t.desti_ordre,
                 distancia: parseFloat(t.distancia.toFixed(2)),
                 desnivell_positiu: t.desnivell_positiu,
-                desnivell_negatiu: t.desnivell_negatiu
+                desnivell_negatiu: t.desnivell_negatiu,
+                geometria_segment: t.geometria_segment
             }))
         };
 
@@ -186,9 +284,13 @@ export default function Rutes() {
 
         try {
             const token = localStorage.getItem('token');
+            const isEditing = !!editantRutaId;
+            const url = isEditing
+                ? `${API_URL}/planner/rutes/${editantRutaId}/editar/`
+                : `${API_URL}/planner/rutes/crear/`;
 
-            const response = await fetch('http://127.0.0.1:8000/rutes/crear_rutes/', {
-                method: 'POST',
+            const response = await fetch(url, {
+                method: isEditing ? 'PUT' : 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
@@ -197,29 +299,215 @@ export default function Rutes() {
             });
 
             if (response.ok) {
-                const gpxString = generarGPX(payloadRuta.nom, trams);
-                setDadesExportacio({ nom: payloadRuta.nom, gpxString: gpxString });
+                const rutaData = await response.json();
+                const rutaId = isEditing ? parseInt(editantRutaId) : rutaData.ruta_id;
 
-                alert("Route saved successfully!");
+                // Capture before state is cleared
+                const savedNodes = [...nodes];
+                const savedTrams = [...trams];
 
-                setMostrarGuardarModal(false);
-                setMostrarExitModal(true);
+                let planId = null;
+                try {
+                    planId = await commitPlanDraft(rutaId, payloadRuta.nom, token);
+                } catch (planErr) {
+                    console.error("Error desant la planificació associada:", planErr);
+                    alert("La ruta s'ha desat però hi ha hagut un problema amb la planificació: " + planErr.message);
+                }
 
                 localStorage.removeItem('ruta_esborrany_nom');
                 localStorage.removeItem('ruta_esborrany_nodes');
-                localStorage.removeItem('ruta_esborrany_trams')
+                localStorage.removeItem('ruta_esborrany_trams');
+                localStorage.removeItem('plan_esborrany');
+                localStorage.removeItem('ruta_editant_id');
+                localStorage.removeItem('ruta_editant_meta');
+                localStorage.removeItem('ruta_editant_planificacio_id');
+                localStorage.removeItem('ruta_editant_motxilla_id');
 
                 setNodes([]);
                 setTrams([]);
                 setNomRuta('La meva nova ruta');
                 setUrlImatge('');
+                setPlanDraft({
+                    motxilla: { nom: 'Motxilla principal', pes_base: 0, materials: [], menjars: [] },
+                    planificacio: { titol: '', data_inici: '', data_fi: '', despeses: [] }
+                });
+
+                if (isEditing) {
+                    setMostrarGuardarModal(false);
+                    navigate(`/rutes/${rutaId}`);
+                } else {
+                    const gpxString = generarGPX(payloadRuta.nom, savedTrams);
+                    setDadesExportacio({ nom: payloadRuta.nom, gpxString, rutaId, planId, savedNodes, savedTrams });
+                    setMostrarGuardarModal(false);
+                    setMostrarExitModal(true);
+                }
             } else {
                 const errorData = await response.json();
-                alert("Error saving route: " + JSON.stringify(errorData));
+                alert("Error desant la ruta: " + JSON.stringify(errorData));
             }
         } catch (err) {
             console.error("Connection error:", err);
         }
+    };
+
+    // === COMMIT BUNDLED PLAN DRAFT ===
+    const commitPlanDraft = async (rutaId, nomRutaFinal, token) => {
+        const { motxilla, planificacio } = planDraft;
+        const hasItems = motxilla.materials.length > 0 || motxilla.menjars.length > 0;
+        const hasPlan = !!planificacio.titol?.trim() || planificacio.data_inici || planificacio.data_fi || planificacio.despeses.length > 0;
+
+        if (!hasItems && !hasPlan && !editantPlanificacioId) return null;
+
+        const authHeaders = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        };
+
+        // === MOTXILLA ===
+        let motxillaId = null;
+
+        if (editantMotxillaId) {
+            motxillaId = editantMotxillaId;
+            await fetch(`${API_URL}/planner/motxilles/${motxillaId}/editar/`, {
+                method: 'PUT',
+                headers: authHeaders,
+                body: JSON.stringify({
+                    nom: motxilla.nom || `Motxilla ${nomRutaFinal}`,
+                    pes_base: parseFloat(motxilla.pes_base) || 0
+                })
+            });
+            // Clear existing items before re-adding from draft
+            const resMot = await fetch(`${API_URL}/planner/motxilles/${motxillaId}/`, { headers: authHeaders });
+            if (resMot.ok) {
+                const motData = await resMot.json();
+                for (const m of motData.materials_detall || []) {
+                    await fetch(`${API_URL}/planner/motxilles/${motxillaId}/materials/${m.material_id}/`, {
+                        method: 'DELETE', headers: authHeaders
+                    });
+                }
+                for (const m of motData.menjars_detall || []) {
+                    await fetch(`${API_URL}/planner/motxilles/${motxillaId}/menjars/${m.menjar_id}/`, {
+                        method: 'DELETE', headers: authHeaders
+                    });
+                }
+            }
+        } else if (hasItems) {
+            const resMotxilla = await fetch(`${API_URL}/planner/motxilles/crear/`, {
+                method: 'POST',
+                headers: authHeaders,
+                body: JSON.stringify({
+                    nom: motxilla.nom || `Motxilla ${nomRutaFinal}`,
+                    pes_base: parseFloat(motxilla.pes_base) || 0
+                })
+            });
+            if (!resMotxilla.ok) throw new Error("No s'ha pogut crear la motxilla");
+            motxillaId = (await resMotxilla.json()).id;
+        }
+
+        // Add materials and menjars (common path for both create and update)
+        if (motxillaId) {
+            for (const m of motxilla.materials) {
+                let materialId = m.ref_id;
+                if (!materialId) {
+                    const resMat = await fetch(`${API_URL}/planner/materials/crear/`, {
+                        method: 'POST',
+                        headers: authHeaders,
+                        body: JSON.stringify({ nom: m.nom, descripcio: m.descripcio || '', pes: m.pes || 0, preu: m.preu || 0, imatge_url: m.imatge_url || '' })
+                    });
+                    if (!resMat.ok) continue;
+                    materialId = (await resMat.json()).id;
+                }
+                await fetch(`${API_URL}/planner/motxilles/${motxillaId}/materials/`, {
+                    method: 'POST',
+                    headers: authHeaders,
+                    body: JSON.stringify({ material_id: materialId, quantitat: m.quantitat || 1 })
+                });
+            }
+
+            for (const m of motxilla.menjars) {
+                let menjarId = m.ref_id;
+                if (!menjarId) {
+                    const resMen = await fetch(`${API_URL}/planner/menjars/crear/`, {
+                        method: 'POST',
+                        headers: authHeaders,
+                        body: JSON.stringify({ nom: m.nom, descripcio: m.descripcio || '', pes: m.pes || 0, preu: m.preu || 0, calories: m.calories || 0, imatge_url: m.imatge_url || '' })
+                    });
+                    if (!resMen.ok) continue;
+                    menjarId = (await resMen.json()).id;
+                }
+                await fetch(`${API_URL}/planner/motxilles/${motxillaId}/menjars/`, {
+                    method: 'POST',
+                    headers: authHeaders,
+                    body: JSON.stringify({ menjar_id: menjarId, quantitat: m.quantitat || 1 })
+                });
+            }
+        }
+
+        // === PLANIFICACIÓ ===
+        if (editantPlanificacioId) {
+            // Delete existing despeses before re-adding
+            const resPlan = await fetch(`${API_URL}/planner/planificacions/${editantPlanificacioId}/`, { headers: authHeaders });
+            if (resPlan.ok) {
+                const planData = await resPlan.json();
+                for (const d of planData.despeses || []) {
+                    await fetch(`${API_URL}/planner/despeses/${d.id}/eliminar/`, {
+                        method: 'DELETE', headers: authHeaders
+                    });
+                }
+            }
+
+            const planBody = {
+                ruta: rutaId,
+                titol: planificacio.titol?.trim() || `Planificació de ${nomRutaFinal}`,
+            };
+            if (motxillaId) planBody.motxilla = motxillaId;
+            if (planificacio.data_inici) planBody.data_inici = planificacio.data_inici;
+            if (planificacio.data_fi) planBody.data_fi = planificacio.data_fi;
+
+            await fetch(`${API_URL}/planner/planificacions/${editantPlanificacioId}/editar/`, {
+                method: 'PUT',
+                headers: authHeaders,
+                body: JSON.stringify(planBody)
+            });
+
+            for (const d of planificacio.despeses) {
+                await fetch(`${API_URL}/planner/planificacions/${editantPlanificacioId}/despeses/`, {
+                    method: 'POST',
+                    headers: authHeaders,
+                    body: JSON.stringify({ concepte: d.concepte, import_despesa: d.import_despesa || 0, divisa: d.divisa || 'EUR' })
+                });
+            }
+            return editantPlanificacioId;
+        } else if (motxillaId || hasPlan) {
+            const planBody = {
+                ruta: rutaId,
+                motxilla: motxillaId,
+                titol: planificacio.titol?.trim() || `Planificació de ${nomRutaFinal}`,
+            };
+            if (planificacio.data_inici) planBody.data_inici = planificacio.data_inici;
+            if (planificacio.data_fi) planBody.data_fi = planificacio.data_fi;
+
+            const resPlan = await fetch(`${API_URL}/planner/planificacions/crear/`, {
+                method: 'POST',
+                headers: authHeaders,
+                body: JSON.stringify(planBody)
+            });
+            if (!resPlan.ok) {
+                const err = await resPlan.json().catch(() => ({}));
+                throw new Error('Planificació: ' + JSON.stringify(err));
+            }
+            const planId = (await resPlan.json()).id;
+
+            for (const d of planificacio.despeses) {
+                await fetch(`${API_URL}/planner/planificacions/${planId}/despeses/`, {
+                    method: 'POST',
+                    headers: authHeaders,
+                    body: JSON.stringify({ concepte: d.concepte, import_despesa: d.import_despesa || 0, divisa: d.divisa || 'EUR' })
+                });
+            }
+            return planId;
+        }
+        return null;
     };
 
 
@@ -401,6 +689,72 @@ export default function Rutes() {
 
         };
 
+    // === DRAFT MODE: IA afegeix ítems a l'esborrany local sense tocar la BD ===
+    const handleAddDraftItem = (item) => {
+        setPlanDraft(prev => {
+            const motxilla = { ...prev.motxilla };
+            const entry = {
+                nom: item.nom,
+                pes: item.pes || 0,
+                preu: item.preu || 0,
+                quantitat: item.quantitat || 1,
+                ref_id: null,
+                imatge_url: '',
+                descripcio: '',
+            };
+            if (item.tipus === 'material') {
+                motxilla.materials = [...motxilla.materials, entry];
+            } else if (item.tipus === 'menjar') {
+                motxilla.menjars = [...motxilla.menjars, { ...entry, calories: item.calories || 0 }];
+            }
+            return { ...prev, motxilla };
+        });
+    };
+
+    // === REFRESC PLANIFICACIÓ DESPRÉS QUE LA IA AFEGEIXI ÍTEMS ===
+    const handleInventariActualitzat = async () => {
+        if (!editantPlanificacioId) return;
+        const token = localStorage.getItem('token');
+        try {
+            const res = await fetch(`${API_URL}/planner/planificacions/${editantPlanificacioId}/`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (!res.ok) return;
+            const planDetail = await res.json();
+
+            setPlanDraft(prev => ({
+                ...prev,
+                motxilla: {
+                    ...prev.motxilla,
+                    materials: (planDetail.motxilla?.materials_detall || []).map(m => ({
+                        nom: m.nom,
+                        pes: parseFloat(m.pes) || 0,
+                        preu: 0,
+                        quantitat: m.quantitat,
+                        ref_id: m.material_id,
+                        imatge_url: '',
+                        descripcio: ''
+                    })),
+                    menjars: (planDetail.motxilla?.menjars_detall || []).map(m => ({
+                        nom: m.nom,
+                        pes: parseFloat(m.pes) || 0,
+                        preu: 0,
+                        calories: m.calories || 0,
+                        quantitat: m.quantitat,
+                        ref_id: m.menjar_id,
+                        imatge_url: '',
+                        descripcio: ''
+                    }))
+                }
+            }));
+
+            if (planDetail.motxilla?.id && !editantMotxillaId) {
+                setEditantMotxillaId(planDetail.motxilla.id);
+                localStorage.setItem('ruta_editant_motxilla_id', String(planDetail.motxilla.id));
+            }
+        } catch { /* silent — no blocking the chat */ }
+    };
+
     // === ESTADÍSTIQUES TOTALS ===
     const stats = trams.reduce((acc, tram) => ({
         distancia: acc.distancia + parseFloat(tram.distancia || 0),
@@ -412,40 +766,85 @@ export default function Rutes() {
         <div className="app-container">
             <Navbar />
 
-            <div className="main-content">
-                {/* --- BARRA LATERAL FIXA --- */}
-                <SideBar
-                    nomRuta={nomRuta}
-                    setNomRuta={setNomRuta}
-                    nodes={nodes}
-                    carregantORS={carregantORS}
-                    handleEliminarNode={handleEliminarNode}
-                    stats={stats}
-                    handleReorderNodes={handleReorderNodes}
-                    handleAfegirNodeMapa={handleAfegirNodeMapa}
-                    setMapFocus={setMapFocus}
-                    setMostrarAjuda={setMostrarAjuda}
-                    setMostrarAjustos={setMostrarAjustos}
-                    onSaveClick={() => setMostrarGuardarModal(true)}
-                />
+            <div className="planificar-wrapper">
+                {/* Tab Navigation Sidebar */}
+                <PlanificarSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
 
-                <MapaRuta
-                    nodes={nodes}
-                    trams={trams}
-                    crearIconaNode={crearIconaNode}
-                    getLletra={getLletra}
-                    handleAfegirNodeMapa={handleAfegirNodeMapa}
-                    carregantORS={carregantORS}
-                    mapFocus={mapFocus}
-                    stats={stats}
-                    mostrarPerfil={mostrarPerfil}
-                    setMostrarPerfil={setMostrarPerfil}
-                    dadesElevacio={dadesElevacio}
-                    altContrast={altContrast}
-                    indicadorPendent={indicadorPendent}
-                    getTextSteepnessORS={getTextSteepnessORS}
-                />
+                {/* Main Content Area */}
+                <div className="planificar-content-area">
+                    {activeTab === 'ruta' && (
+                        <div className="main-content">
+                            <SideBar
+                                nomRuta={nomRuta}
+                                setNomRuta={setNomRuta}
+                                nodes={nodes}
+                                carregantORS={carregantORS}
+                                handleEliminarNode={handleEliminarNode}
+                                stats={stats}
+                                handleReorderNodes={handleReorderNodes}
+                                handleAfegirNodeMapa={handleAfegirNodeMapa}
+                                setMapFocus={setMapFocus}
+                                setMostrarAjuda={setMostrarAjuda}
+                                setMostrarAjustos={setMostrarAjustos}
+                                onSaveClick={() => setMostrarGuardarModal(true)}
+                            />
+
+                            <MapaRuta
+                                nodes={nodes}
+                                trams={trams}
+                                crearIconaNode={crearIconaNode}
+                                getLletra={getLletra}
+                                handleAfegirNodeMapa={handleAfegirNodeMapa}
+                                carregantORS={carregantORS}
+                                mapFocus={mapFocus}
+                                stats={stats}
+                                mostrarPerfil={mostrarPerfil}
+                                setMostrarPerfil={setMostrarPerfil}
+                                dadesElevacio={dadesElevacio}
+                                altContrast={altContrast}
+                                indicadorPendent={indicadorPendent}
+                                getTextSteepnessORS={getTextSteepnessORS}
+                                initialBounds={initialBounds}
+                            />
+                        </div>
+                    )}
+
+                    {activeTab === 'planificacio' && (
+                        <div className="planificacio-combined">
+                            <LogisticaView
+                                planDraft={planDraft}
+                                setPlanDraft={setPlanDraft}
+                                onGoToRuta={() => setActiveTab('ruta')}
+                                hasRoute={nodes.length >= 2}
+                                onSaveAll={() => setMostrarGuardarModal(true)}
+                            />
+                            <FinancesView
+                                planDraft={planDraft}
+                                setPlanDraft={setPlanDraft}
+                                onGoToRuta={() => setActiveTab('ruta')}
+                                onGoToLogistica={() => setActiveTab('planificacio')}
+                                hasRoute={nodes.length >= 2}
+                                onSaveAll={() => setMostrarGuardarModal(true)}
+                            />
+                        </div>
+                    )}
+                    {activeTab === 'clima' && <ClimaView nodes={nodes} />}
+                    {activeTab === 'alertes' && <AlertesView />}
+                    {activeTab === 'assistent' && (
+                        <AssistentIA
+                            rutaId={editantRutaId ? parseInt(editantRutaId) : null}
+                            planificacioId={editantPlanificacioId}
+                            stats={stats}
+                            nomRuta={nomRuta}
+                            nodes={nodes}
+                            planDraft={planDraft}
+                            onInventariActualitzat={handleInventariActualitzat}
+                            onAddDraftItem={handleAddDraftItem}
+                        />
+                    )}
+                </div>
             </div>
+
             <Footer />
             {mostrarAjuda && <AjudaModal onClose={() => setMostrarAjuda(false)} />}
 
@@ -463,6 +862,8 @@ export default function Rutes() {
                     onSave={processarIEnviarRuta}
                     stats={stats}
                     defaultName={nomRuta}
+                    defaultDescription={editantMeta?.descripcio || ''}
+                    defaultModality={editantMeta?.modalitat || 'senderisme'}
                     urlImatge={urlImatge}
                     setUrlImatge={setUrlImatge}
                 />

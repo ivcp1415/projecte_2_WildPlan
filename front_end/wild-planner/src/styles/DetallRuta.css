@@ -213,6 +213,12 @@ body, .detall-page {
     .detall-main { padding: 16px; }
     .hero { height: 320px; }
     .hero-title { font-size: 26px; }
+    .hero-content { padding: 16px; }
+    .hero-desc { font-size: 14px; }
+    .detall-footer { padding: 16px; }
+    .detall-footer-links { gap: 12px; flex-wrap: wrap; }
+    .navbar { padding: 0 16px; }
+    .spec-value { font-size: 18px; }
 }
 
 /* ================================================================
@@ -343,23 +349,35 @@ body, .detall-page {
 }
 
 /* ================================================================
-   VALORACIONS
+   SOCIAL PANEL  (unified card wrapping Valoracions + Comentaris)
 ================================================================ */
-.valoracions-section {
+.social-panel {
     background: var(--surface-lowest);
-    border: 1px solid rgba(194,200,194,0.3);
+    border: 1px solid rgba(194, 200, 194, 0.3);
     border-radius: var(--radius-xl);
-    padding: 24px;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
-.valoracions-header {
+/* ================================================================
+   VALORACIONS HEADER  (inside .social-panel)
+================================================================ */
+.valoracions-header-block {
+    padding: 24px 24px 20px;
+    border-bottom: 1px solid rgba(194, 200, 194, 0.3);
+}
+
+.valoracions-rating-row {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
 }
 
-.valoracions-rating-row {
+.valoracions-rating-left { display: flex; flex-direction: column; gap: 4px; }
+
+.valoracions-num-stars {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -375,69 +393,65 @@ body, .detall-page {
 .valoracions-stars { display: flex; }
 
 .valoracions-star {
-    font-size: 20px;
+    font-size: 22px;
     color: var(--secondary);
 }
 
 .valoracions-total {
     font-size: 14px;
     color: var(--on-surface-variant);
-    margin-top: 4px;
 }
 
-.valoracions-actions { display: flex; gap: 8px; }
+.valoracions-actions {
+    display: flex;
+    gap: 8px;
+}
 
-.valoracions-btn {
+.val-count {
     display: flex;
     align-items: center;
     gap: 4px;
-    padding: 8px 12px;
+    padding: 6px 12px;
     border-radius: 999px;
-    border: none;
-    cursor: pointer;
     font-size: 13px;
     font-weight: 600;
-    font-family: inherit;
-    transition: background 0.2s;
 }
 
-.valoracions-btn--like    { background: #d1fae5; color: #065f46; }
-.valoracions-btn--dislike { background: #fee2e2; color: #991b1b; }
-.valoracions-btn--like:hover    { background: #a7f3d0; }
-.valoracions-btn--dislike:hover { background: #fecaca; }
+.val-count .material-symbols-outlined { font-size: 18px; }
+
+.val-count--like    { background: #d1fae5; color: #065f46; }
+.val-count--dislike { background: #fee2e2; color: #991b1b; }
 
 /* ================================================================
-   COMENTARIS
+   COMENTARIS  (inside .social-panel)
 ================================================================ */
 .comentaris-section {
-    background: var(--surface-lowest);
-    border: 1px solid rgba(194,200,194,0.3);
-    border-radius: var(--radius-xl);
     padding: 24px;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
     display: flex;
     flex-direction: column;
     gap: 16px;
 }
 
+.comentari-form-block {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
 .comentaris-title {
     font-size: 14px;
     font-weight: 600;
-    color: var(--on-surface);
     letter-spacing: 0.02em;
+    color: var(--on-surface);
 }
 
-.comentaris-empty {
-    font-size: 14px;
-    color: var(--on-surface-variant);
-}
+/* ── Comment form ─────────────────────────────── */
+.comentari-form { width: 100%; }
 
-.comentaris-llista { display: flex; flex-direction: column; gap: 16px; }
-
-.comentari-article {
+.comentari-form-row {
     display: flex;
-    gap: 16px;
-    position: relative;
+    gap: 12px;
+    align-items: flex-start;
 }
 
 .comentari-avatar {
@@ -454,7 +468,157 @@ body, .detall-page {
     flex-shrink: 0;
 }
 
-.comentari-cos { display: flex; flex-direction: column; gap: 4px; flex: 1; }
+.comentari-avatar--form { margin-top: 4px; }
+
+.comentari-form-fields {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Star picker */
+.star-picker {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.star-picker-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--on-surface-variant);
+    letter-spacing: 0.04em;
+}
+
+.star-picker-stars { display: flex; }
+
+.star-btn {
+    background: none;
+    border: none;
+    padding: 2px;
+    cursor: pointer;
+    line-height: 1;
+    display: flex;
+}
+
+.star-icon {
+    font-size: 22px;
+    color: var(--secondary);
+    transition: transform 0.1s;
+}
+
+.star-btn:hover .star-icon { transform: scale(1.15); }
+
+/* Textarea */
+.comentari-textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid rgba(194, 200, 194, 0.4);
+    border-radius: var(--radius-lg);
+    background: var(--surface-low);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--on-surface);
+    resize: none;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    box-sizing: border-box;
+}
+
+.comentari-textarea::placeholder { color: var(--on-surface-variant); }
+
+.comentari-textarea:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 1px var(--primary);
+}
+
+/* Form feedback */
+.comentari-form-error {
+    font-size: 12px;
+    color: var(--error);
+}
+
+.comentari-form-success {
+    font-size: 12px;
+    color: #065f46;
+    font-weight: 500;
+}
+
+.comentari-form-actions { display: flex; justify-content: flex-end; }
+
+.comentari-submit-btn {
+    background: var(--primary);
+    color: var(--on-primary);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    border: none;
+    border-radius: 999px;
+    padding: 8px 20px;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(23, 49, 36, 0.2);
+    transition: background 0.15s, transform 0.1s;
+}
+
+.comentari-submit-btn:hover:not(:disabled) {
+    background: var(--primary-container);
+    transform: translateY(-1px);
+}
+
+.comentari-submit-btn:disabled {
+    background: var(--outline);
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+/* Guest prompt */
+.comentari-guest-msg {
+    font-size: 14px;
+    color: var(--on-surface-variant);
+}
+
+.comentari-guest-link {
+    color: var(--primary);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.comentari-guest-link:hover { text-decoration: underline; }
+
+/* ── Section divider ─────────────────────────── */
+.comentari-section-hr {
+    border: none;
+    border-top: 1px solid rgba(194, 200, 194, 0.3);
+    margin: 0;
+}
+
+/* ── Comments list ───────────────────────────── */
+.comentaris-empty {
+    font-size: 14px;
+    color: var(--on-surface-variant);
+}
+
+.comentaris-llista {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.comentari-article {
+    display: flex;
+    gap: 12px;
+}
+
+.comentari-cos {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+}
 
 .comentari-header {
     display: flex;
@@ -471,12 +635,13 @@ body, .detall-page {
 .comentari-valoracio {
     font-size: 12px;
     color: var(--secondary);
+    letter-spacing: 1px;
 }
 
 .comentari-text {
     font-size: 14px;
-    color: var(--on-surface-variant);
     line-height: 1.5;
+    color: var(--on-surface-variant);
 }
 
 .comentari-badge {
@@ -498,8 +663,7 @@ body, .detall-page {
 
 .comentari-hr {
     border: none;
-    border-top: 1px solid rgba(194,200,194,0.2);
-    margin-top: 4px;
+    border-top: 1px solid rgba(194, 200, 194, 0.2);
 }
 
 /* ================================================================
@@ -531,3 +695,100 @@ body, .detall-page {
 }
 
 .detall-footer-links a:hover { color: var(--primary); }
+
+/* --- ESTILS DE LA TARGETA DE COMPARTIR --- */
+
+.share-card {
+    position: absolute;
+    top: 45px; /* Ajusta segons l'alçada del botó per col·locar-ho just sota */
+    right: 0;
+    width: 250px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    border: 1px solid #eaeaea;
+    z-index: 100; /* Assegura que quedi per sobre dels comentaris/mapes */
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.share-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.share-card-header h4 {
+    margin: 0;
+    font-size: 1rem;
+    color: #333;
+}
+
+.close-share {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #888;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.close-share:hover {
+    color: #333;
+}
+
+.share-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.share-option {
+    padding: 0.6rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background-color 0.2s;
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+.share-option:hover {
+    background-color: #e0e0e0;
+}
+
+/* Colors opcionals per donar-li més vida als botons */
+.share-option.wa:hover { background-color: #dcf8c6; color: #075e54; }
+.share-option.x:hover { background-color: #e8f5fd; color: #1da1f2; }
+.share-option.fb:hover { background-color: #e8eff8; color: #1877f2; }
+
+.share-divider {
+    height: 1px;
+    background-color: #eee;
+    margin: 0.5rem 0;
+}
+
+.share-option.copy {
+    background-color: transparent;
+    border: 1px solid #ccc;
+    justify-content: center;
+}
+
+.share-option.copy:hover {
+    background-color: #f0f0f0;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}

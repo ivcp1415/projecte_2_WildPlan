@@ -1,21 +1,49 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Navbar from "../components/Navbar.jsx";
 import Footer from "../components/Footer.jsx";
-import PerfilCard from "../components/PerfilCard";
+import PerfilCard from "../components/PerfilCard.jsx";
 import "../styles/perfil.css";
 
-// Component de Pàgina de Perfil: Dinàmic i amb control d'estats
 function PerfilUsuari() {
-  // Estats per gestionar la informació, el carregament i els possibles errors
   const [usuari, setUsuari] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Recuperem l'ID i el Token segons el teu flux de login per a l'autenticació
+  const [docs, setDocs] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('perfil_docs') || '[]'); }
+    catch { return []; }
+  });
+  const [dragOver, setDragOver] = useState(false);
+  const fileInputRef = useRef(null);
+
   const usuariId = localStorage.getItem('userId');
   const token = localStorage.getItem('token');
 
-  // useEffect per consumir l'API de DRF de forma dinàmica (Requisit obligatori)
+  const addDocs = (files) => {
+    const nova = Array.from(files).map(f => ({ name: f.name, size: f.size }));
+    const updated = [...docs, ...nova];
+    setDocs(updated);
+    localStorage.setItem('perfil_docs', JSON.stringify(updated));
+  };
+
+  const deleteDoc = (index) => {
+    const updated = docs.filter((_, i) => i !== index);
+    setDocs(updated);
+    localStorage.setItem('perfil_docs', JSON.stringify(updated));
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setDragOver(false);
+    if (e.dataTransfer.files.length) addDocs(e.dataTransfer.files);
+  };
+
+  const formatSize = (bytes) => {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  };
+
   useEffect(() => {
     // Verificació de seguretat: si no hi ha usuariId, no fem la petició
     if (!usuariId) {
@@ -25,7 +53,7 @@ function PerfilUsuari() {
     }
 
     // Fem la crida a l'endpoint de l'usuari amb el token de seguretat
-    fetch(`http://127.0.0.1:8000/rutes/usuaris/${usuariId}/`, {
+    fetch(`${import.meta.env.VITE_APP_API_URL}/planner/usuaris/${usuariId}/`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`, // Enviem el token per complir amb la seguretat de l'API
@@ -79,6 +107,57 @@ function PerfilUsuari() {
                   </div>
                 )}
               </div>
+            </div>
+
+            <div className="docs-section">
+              <h2 className="docs-title">Documentació Crítica</h2>
+              <p className="docs-subtitle">
+                Assegurança, DNI, contacte d'emergència, llicències. Accessibles des de qualsevol dispositiu.
+              </p>
+
+              <input
+                ref={fileInputRef}
+                type="file"
+                multiple
+                accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                style={{ display: 'none' }}
+                onChange={e => { if (e.target.files.length) addDocs(e.target.files); e.target.value = ''; }}
+              />
+
+              <div
+                className={`docs-upload-zone${dragOver ? ' drag-over' : ''}`}
+                onClick={() => fileInputRef.current.click()}
+                onDragOver={e => { e.preventDefault(); setDragOver(true); }}
+                onDragLeave={() => setDragOver(false)}
+                onDrop={handleDrop}
+              >
+                <span className="material-symbols-outlined docs-upload-icon">upload_file</span>
+                <p className="docs-upload-text">Clica o arrossega fitxers aquí</p>
+                <p className="docs-upload-hint">PDF, JPG, PNG, DOC — màx. 20 MB per fitxer</p>
+              </div>
+
+              {docs.length > 0 && (
+                <ul className="docs-file-list">
+                  {docs.map((doc, i) => (
+                    <li key={i} className="docs-file-item">
+                      <div className="docs-file-info">
+                        <span className="material-symbols-outlined docs-file-icon">description</span>
+                        <div>
+                          <p className="docs-file-name">{doc.name}</p>
+                          <p className="docs-file-size">{formatSize(doc.size)}</p>
+                        </div>
+                      </div>
+                      <button className="docs-delete-btn" onClick={() => deleteDoc(i)} aria-label="Eliminar document">
+                        <span className="material-symbols-outlined">close</span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              {docs.length === 0 && (
+                <p className="docs-empty">Cap document afegit encara.</p>
+              )}
             </div>
           </>
         )}

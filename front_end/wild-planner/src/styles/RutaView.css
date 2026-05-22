@@ -1,0 +1,81 @@
+/* src/styles/RutaView.css */
+
+.ruta-view {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.rutes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ruta-item {
+  background-color: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #E8E6DF;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(44, 44, 42, 0.06);
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ruta-item:hover {
+  border-color: #3B6D11;
+  box-shadow: 0 4px 16px rgba(59, 109, 17, 0.12);
+  transform: translateY(-2px);
+}
+
+.ruta-item h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #2C2C2A;
+}
+
+.ruta-specs {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.ruta-specs span {
+  font-size: 13px;
+  color: #888780;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ruta-descripcio {
+  font-size: 14px;
+  color: #5F5E5A;
+  line-height: 1.6;
+  margin-top: 4px;
+}
+
+@media (max-width: 768px) {
+  .ruta-item {
+    padding: 16px;
+  }
+
+  .ruta-item h3 {
+    font-size: 16px;
+  }
+
+  .ruta-specs {
+    gap: 12px;
+  }
+
+  .ruta-specs span {
+    font-size: 12px;
+  }
+
+  .ruta-descripcio {
+    font-size: 13px;
+  }
+}
