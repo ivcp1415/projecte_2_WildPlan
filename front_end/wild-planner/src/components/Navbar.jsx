@@ -62,11 +62,8 @@ const Navbar = () => {
         <header className="navbar-premium">
             <div className="navbar-container">
                 <div className="navbar-logo" onClick={() => navigate('/')}>
-                    <img
-                        src="/sendera-logo.svg"
-                        alt="Sendera logo"
-                        className="navbar-logo-icon"
-                    />
+                    <span className="material-symbols-outlined navbar-logo-icon">landscape</span>
+                    <span className="navbar-brand-name">Sendera</span>
                 </div>
 
                 <nav className="navbar-links">

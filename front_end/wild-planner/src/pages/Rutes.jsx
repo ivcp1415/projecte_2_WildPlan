@@ -768,7 +768,12 @@ export default function Rutes() {
 
             <div className="planificar-wrapper">
                 {/* Tab Navigation Sidebar */}
-                <PlanificarSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+                <PlanificarSidebar
+                    activeTab={activeTab}
+                    setActiveTab={setActiveTab}
+                    setMostrarAjuda={setMostrarAjuda}
+                    setMostrarAjustos={setMostrarAjustos}
+                />
 
                 {/* Main Content Area */}
                 <div className="planificar-content-area">
@@ -784,8 +789,6 @@ export default function Rutes() {
                                 handleReorderNodes={handleReorderNodes}
                                 handleAfegirNodeMapa={handleAfegirNodeMapa}
                                 setMapFocus={setMapFocus}
-                                setMostrarAjuda={setMostrarAjuda}
-                                setMostrarAjustos={setMostrarAjustos}
                                 onSaveClick={() => setMostrarGuardarModal(true)}
                             />
 

@@ -50,15 +50,12 @@
 }
 
 @media (max-width: 768px) {
-  .planificar-container {
-    flex-direction: column;
-  }
-
+  /* Sidebar is fixed at bottom, content fills full width */
   .planificar-content {
-    padding: 24px 16px;
+    padding: 16px 16px 76px;
   }
 
   .view-header h1 {
-    font-size: 24px;
+    font-size: 22px;
   }
 }

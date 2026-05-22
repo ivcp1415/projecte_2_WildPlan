@@ -12,7 +12,7 @@ import '../styles/AddItemModal.css';
 function AddDespesaModal({ onClose, onAdd }) {
   const [form, setForm] = useState({
     concepte: '',
-    import_despesa: 0,
+    import_despesa: '',
     divisa: 'EUR'
   });
   const [error, setError] = useState(null);
@@ -62,7 +62,7 @@ function AddDespesaModal({ onClose, onAdd }) {
                   min="0"
                   value={form.import_despesa}
                   onChange={(e) =>
-                    setForm({ ...form, import_despesa: parseFloat(e.target.value) || 0 })
+                    setForm({ ...form, import_despesa: e.target.value })
                   }
                 />
               </div>

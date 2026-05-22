@@ -833,6 +833,7 @@
 
   .planif-header-actions {
     flex-wrap: wrap;
+    gap: 8px;
   }
 
   .planif-plan-select,
@@ -842,8 +843,202 @@
     min-width: 0;
   }
 
+  .planif-draft-badge {
+    flex: 1;
+    justify-content: center;
+    min-width: 0;
+  }
+
   .planif-header-text h1 {
-    font-size: 24px;
+    font-size: 22px;
+  }
+
+  /* Card heads stack vertically on mobile */
+  .planif-card-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .planif-card-actions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .planif-action-btn {
+    flex: 1;
+    min-width: 120px;
+    justify-content: center;
+    height: 44px;
+  }
+
+  /* Larger touch targets */
+  .qty-stepper {
+    height: 40px;
+  }
+
+  .qty-stepper button {
+    width: 36px;
+  }
+
+  .qty-stepper input {
+    width: 44px;
+  }
+
+  .cell-action-btn {
+    padding: 10px;
+  }
+
+  /* Bottom-sheet modal on mobile */
+  .modal-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .modal-container {
+    max-width: 100%;
+    border-radius: 20px 20px 0 0;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .planif-warning {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .planif-warning .planif-btn-secondary {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* =============================================
+   MOBILE CARD LISTS — shown only at ≤640px
+   (replace tables with swipeable cards)
+   ============================================= */
+
+/* Default: show table, hide mobile cards */
+.mobile-items-list,
+.mobile-finances-list {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  /* Hide tables, show mobile cards */
+  .excel-table-container {
+    display: none;
+  }
+
+  .mobile-items-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    background-color: #e1e3e4;
+    border-top: 1px solid #e1e3e4;
+  }
+
+  .mobile-item-card {
+    background: #ffffff;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .mobile-item-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .mobile-item-name {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 500;
+    color: #191c1d;
+    min-width: 0;
+  }
+
+  .mobile-item-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .mobile-item-weight {
+    font-size: 12px;
+    color: #727973;
+    font-family: 'SF Mono', Menlo, Monaco, Consolas, monospace;
+  }
+
+  .mobile-item-total {
+    font-size: 13px;
+    font-weight: 700;
+    color: #173124;
+    font-family: 'SF Mono', Menlo, Monaco, Consolas, monospace;
+    margin-left: auto;
+  }
+
+  .mobile-finances-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    background-color: #e1e3e4;
+    border-top: 1px solid #e1e3e4;
+  }
+
+  .mobile-finances-row {
+    background: #ffffff;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .mobile-finances-name {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 500;
+    color: #191c1d;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .mobile-finances-price {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #424844;
+    flex-shrink: 0;
+  }
+
+  .mobile-finances-total {
+    font-size: 14px;
+    font-weight: 700;
+    color: #173124;
+    font-family: 'SF Mono', Menlo, Monaco, Consolas, monospace;
+    min-width: 52px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  .finances-price-input {
+    width: 72px;
+  }
+
+  /* Reduce view padding so content fills better */
+  .planif-view {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .planif-fields {
+    padding: 12px 14px 14px;
   }
 }
 
